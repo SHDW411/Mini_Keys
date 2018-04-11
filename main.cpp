@@ -8,10 +8,11 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "winmm.lib")
 
-char filenames[8][24] = { "E:\\resources\\D6_4.wav", "E:\\resources\\G5_8.wav", "E:\\resources\\F5_2.wav", "E:\\resources\\A5_2.wav", "E:\\resources\\A#5_2.wav", "E:\\resources\\C6_2.wav", "E:\\resources\\D6_2.wav", "E:\\resources\\F6_2.wav" };
+char filenames[8][24] = { "resources\\D6_4.wav", "resources\\G5_8.wav", "resources\\F5_2.wav", "resources\\A5_2.wav", "resources\\A#5_2.wav", "resources\\C6_2.wav", "resources\\D6_2.wav", "resources\\F6_2.wav" };
 char* fn = filenames[0];
 int sound_playing = 5;
 int counter = 0;
+SoundClass m_Sound;
 
 struct layer
 {
@@ -36,6 +37,25 @@ SoundClass::SoundClass()
 	m_DirectSound = 0;
 	m_primaryBuffer = 0;
 	m_secondaryBuffer1 = 0;
+	m_secondaryBuffer2 = 0;
+	m_secondaryBuffer3 = 0;
+	m_secondaryBuffer4 = 0;
+	m_secondaryBuffer5 = 0;
+	m_secondaryBuffer6 = 0;
+	m_secondaryBuffer7 = 0;
+	m_secondaryBuffer8 = 0;
+	m_secondaryBuffer9 = 0;
+	m_secondaryBuffer10 = 0;
+	m_secondaryBuffer11= 0;
+	m_secondaryBuffer12 = 0;
+	m_secondaryBuffer13 = 0;
+	m_secondaryBuffer14 = 0;
+	m_secondaryBuffer15 = 0;
+	m_secondaryBuffer16 = 0;
+	m_secondaryBuffer17 = 0;
+	m_secondaryBuffer18 = 0;
+	m_secondaryBuffer19 = 0;
+	m_secondaryBuffer20 = 0;
 }
 
 SoundClass::SoundClass(const SoundClass& other)
@@ -57,19 +77,19 @@ bool SoundClass::Initialize(HWND hwnd)
 	}
 
 	// Load a wave audio file onto a secondary buffer.
-	result = LoadWaveFile(fn, &m_secondaryBuffer1);
+//	result = LoadWaveFile(fn, &m_secondaryBuffer1);
 
-	if (!result)
-	{
-		return false;
-	}
+//	if (!result)
+//	{
+//		return false;
+//	}
 
 	// Play the wave file now that it has been loaded.
-	result = PlayWaveFile();
-	if (!result)
-	{
-		return false;
-	}
+//	result = PlayWaveFile();
+//	if (!result)
+//	{
+//		return false;
+//	}
 
 	return true;
 }
@@ -78,7 +98,25 @@ void SoundClass::Shutdown()
 {
 	// Release the secondary buffer.
 	ShutdownWaveFile(&m_secondaryBuffer1);
-
+	ShutdownWaveFile(&m_secondaryBuffer2);
+	ShutdownWaveFile(&m_secondaryBuffer3);
+	ShutdownWaveFile(&m_secondaryBuffer4);
+	ShutdownWaveFile(&m_secondaryBuffer5);
+	ShutdownWaveFile(&m_secondaryBuffer6);
+	ShutdownWaveFile(&m_secondaryBuffer7);
+	ShutdownWaveFile(&m_secondaryBuffer8);
+	ShutdownWaveFile(&m_secondaryBuffer9);
+	ShutdownWaveFile(&m_secondaryBuffer10);
+	ShutdownWaveFile(&m_secondaryBuffer11);
+	ShutdownWaveFile(&m_secondaryBuffer12);
+	ShutdownWaveFile(&m_secondaryBuffer13);
+	ShutdownWaveFile(&m_secondaryBuffer14);
+	ShutdownWaveFile(&m_secondaryBuffer15);
+	ShutdownWaveFile(&m_secondaryBuffer16);
+	ShutdownWaveFile(&m_secondaryBuffer17);
+	ShutdownWaveFile(&m_secondaryBuffer18);
+	ShutdownWaveFile(&m_secondaryBuffer19);
+	ShutdownWaveFile(&m_secondaryBuffer20);
 	return;
 }
 
@@ -330,13 +368,13 @@ void SoundClass::ShutdownWaveFile(IDirectSoundBuffer8** secondaryBuffer)
 	return;
 }
 
-bool SoundClass::PlayWaveFile()
+bool SoundClass::PlayWaveFile(IDirectSoundBuffer8** secondaryBuffer)
 {
 	HRESULT result;
 
 
 	// Set position at the beginning of the sound buffer.
-	result = m_secondaryBuffer1->SetCurrentPosition(0);
+	result = (*secondaryBuffer)->SetCurrentPosition(0);
 
 	if (FAILED(result))
 	{
@@ -344,7 +382,7 @@ bool SoundClass::PlayWaveFile()
 	}
 
 	// Set volume of the buffer to 100%.
-	result = m_secondaryBuffer1->SetVolume(DSBVOLUME_MAX);
+	result = (*secondaryBuffer)->SetVolume(DSBVOLUME_MAX);
 
 	if (FAILED(result))
 	{
@@ -352,7 +390,7 @@ bool SoundClass::PlayWaveFile()
 	}
 
 	// Play the contents of the secondary sound buffer.
-	result = m_secondaryBuffer1->Play(0, 0, 0);
+	result = (*secondaryBuffer)->Play(0, 0, 0);
 
 	if (FAILED(result))
 	{
@@ -378,10 +416,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case ID_PRZYCISK1:
 		{
 			MessageBox(hwnd, "No nieŸle", "Info", MB_ICONINFORMATION);
-			bool result;
-			SoundClass* m_Sound;
 
-			m_Sound = new SoundClass[20];
 			sound_playing = 5;
 			layer1_counter = 0;
 			layer2_counter = 0;
@@ -394,10 +429,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			layer4_playing = 1;
 			layer5_playing = 1;
 			counter = 0;
-			if (!m_Sound)
-			{
-				return false;
-			}
+			m_Sound.Initialize(hwnd);
 
 			while (sound_playing)
 			{
@@ -412,10 +444,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 						break;
 					}
 					fn += 24 * layer1[layer1_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer1);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer1);
 					Sleep(layer1[layer1_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer1[layer1_counter].note_id;
 					layer1_counter++;
 					counter++;
@@ -430,10 +461,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 						break;
 					}
 					fn += 24 * layer1[layer1_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer2);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer2);
 					Sleep(layer1[layer1_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer1[layer1_counter].note_id;
 					layer1_counter++;
 					counter++;
@@ -448,10 +478,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 						break;
 					}
 					fn += 24 * layer1[layer1_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer3);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer3);
 					Sleep(layer1[layer1_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer1[layer1_counter].note_id;
 					layer1_counter++;
 					counter++;
@@ -466,10 +495,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 						break;
 					}
 					fn += 24 * layer1[layer1_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer4);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer4);
 					Sleep(layer1[layer1_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer1[layer1_counter].note_id;
 					layer1_counter++;
 					counter++;
@@ -481,14 +509,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer2_playing = 0;
 						counter += 4;
-						m_Sound += 4;
 						break;
 					}
 					fn += 24 * layer2[layer2_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer5);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer5);
 					Sleep(layer2[layer2_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer2[layer2_counter].note_id;
 					layer2_counter++;
 					counter++;
@@ -500,14 +526,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer2_playing = 0;
 						counter += 3;
-						m_Sound += 3;
 						break;
 					}
 					fn += 24 * layer2[layer2_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer6);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer6);
 					Sleep(layer2[layer2_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer2[layer2_counter].note_id;
 					layer2_counter++;
 					counter++;
@@ -519,14 +543,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer2_playing = 0;
 						counter += 2;
-						m_Sound += 2;
 						break;
 					}
 					fn += 24 * layer2[layer2_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer7);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer7);
 					Sleep(layer2[layer2_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer2[layer2_counter].note_id;
 					layer2_counter++;
 					counter++;
@@ -538,14 +560,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer2_playing = 0;
 						counter++;
-						m_Sound++;
 						break;
 					}
 					fn += 24 * layer2[layer2_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer8);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer8);
 					Sleep(layer2[layer2_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer2[layer2_counter].note_id;
 					layer2_counter++;
 					counter++;
@@ -557,14 +577,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer3_playing = 0;
 						counter += 4;
-						m_Sound += 4;
 						break;
 					}
 					fn += 24 * layer3[layer3_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer9);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer9);
 					Sleep(layer3[layer3_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer3[layer3_counter].note_id;
 					layer3_counter++;
 					counter++;
@@ -576,14 +594,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer3_playing = 0;
 						counter += 3;
-						m_Sound += 3;
 						break;
 					}
 					fn += 24 * layer3[layer3_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer10);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer10);
 					Sleep(layer3[layer3_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer3[layer3_counter].note_id;
 					layer3_counter++;
 					counter++;
@@ -595,14 +611,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer3_playing = 0;
 						counter += 2;
-						m_Sound += 2;
 						break;
 					}
 					fn += 24 * layer3[layer3_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer11);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer11);
 					Sleep(layer3[layer3_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer3[layer3_counter].note_id;
 					layer3_counter++;
 					counter++;
@@ -614,14 +628,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer3_playing = 0;
 						counter++;
-						m_Sound++;
 						break;
 					}
 					fn += 24 * layer3[layer3_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer12);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer12);
 					Sleep(layer3[layer3_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer3[layer3_counter].note_id;
 					layer3_counter++;
 					counter++;
@@ -633,14 +645,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer4_playing = 0;
 						counter += 4;
-						m_Sound += 4;
 						break;
 					}
 					fn += 24 * layer4[layer4_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer13);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer13);
 					Sleep(layer4[layer4_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer4[layer4_counter].note_id;
 					layer4_counter++;
 					counter++;
@@ -652,14 +662,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer4_playing = 0;
 						counter += 3;
-						m_Sound += 3;
 						break;
 					}
 					fn += 24 * layer4[layer4_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer14);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer14);
 					Sleep(layer4[layer4_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer4[layer4_counter].note_id;
 					layer4_counter++;
 					counter++;
@@ -671,14 +679,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer4_playing = 0;
 						counter += 2;
-						m_Sound += 2;
 						break;
 					}
 					fn += 24 * layer4[layer4_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer15);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer15);
 					Sleep(layer4[layer4_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer4[layer4_counter].note_id;
 					layer4_counter++;
 					counter++;
@@ -690,14 +696,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer4_playing = 0;
 						counter++;
-						m_Sound++;
 						break;
 					}
 					fn += 24 * layer4[layer4_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer16);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer16);
 					Sleep(layer4[layer4_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer4[layer4_counter].note_id;
 					layer4_counter++;
 					counter++;
@@ -709,14 +713,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer5_playing = 0;
 						counter = 0;
-						m_Sound -= 16;
 						break;
 					}
 					fn += 24 * layer5[layer5_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer17);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer17);
 					Sleep(layer5[layer5_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer5[layer5_counter].note_id;
 					layer5_counter++;
 					counter++;
@@ -728,14 +730,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer5_playing = 0;
 						counter = 0;
-						m_Sound -= 17;
 						break;
 					}
 					fn += 24 * layer5[layer5_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer18);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer18);
 					Sleep(layer5[layer5_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer5[layer5_counter].note_id;
 					layer5_counter++;
 					counter++;
@@ -747,14 +747,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer5_playing = 0;
 						counter = 0;
-						m_Sound -= 18;
 						break;
 					}
 					fn += 24 * layer5[layer5_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer19);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer19);
 					Sleep(layer5[layer5_counter].note_length * 120);
-					m_Sound++;
-					m_Sound->Shutdown();
 					fn -= 24 * layer5[layer5_counter].note_id;
 					layer5_counter++;
 					counter++;
@@ -766,14 +764,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						layer5_playing = 0;
 						counter = 0;
-						m_Sound -= 19;
 						break;
 					}
 					fn += 24 * layer5[layer5_counter].note_id;
-					result = m_Sound->Initialize(hwnd);
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer20);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer20);
 					Sleep(layer5[layer5_counter].note_length * 120);
-					m_Sound -= 19;
-					m_Sound->Shutdown();
 					fn -= 24 * layer5[layer5_counter].note_id;
 					layer5_counter++;
 					counter = 0;
@@ -785,19 +781,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				}
 				
 				}
-	//			if (!result)
-	//			{
-	//				MessageBox(hwnd, "Could not initialize Direct Sound.", "Error", MB_OK);
-	//				return false;
-	//			}
+
 				sound_playing = layer1_playing + layer2_playing + layer3_playing + layer4_playing + layer5_playing;
 			}
-			m_Sound->ShutdownDirectSound();
-			if (m_Sound)
-			{
-				delete[] m_Sound;
-				m_Sound = 0;
-			}
+			Sleep(6000);
+			m_Sound.Shutdown();
+			m_Sound.ShutdownDirectSound();
 			break;
 		}
 		case ID_PRZYCISK2:
@@ -887,12 +876,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	hPrzycisk1 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Pszycisk1", WS_CHILD | WS_VISIBLE | WS_BORDER, 120, 100, 150, 30, hwnd, (HMENU)ID_PRZYCISK1, hInstance, NULL);
 	hPrzycisk2 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Pszycisk2", WS_CHILD | WS_VISIBLE | WS_BORDER, 120, 150, 150, 30, hwnd, (HMENU)ID_PRZYCISK2, hInstance, NULL);
 	HWND hText = CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL, 5, 250, 150, 150, hwnd, NULL, hInstance, NULL);
-	SetWindowText(hText, "No i fajnie");
+	SetWindowText(hText, "...");
 	HWND hCombo = CreateWindowEx(WS_EX_CLIENTEDGE, "COMBOBOX", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | CBS_DROPDOWNLIST, 300, 5, 150, 200, hwnd, NULL, hInstance, NULL);
 	SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"Element 1");
 	SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"Element 2");
 	HWND hStatic = CreateWindowEx(0, "STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_LEFT, 5, 5, 100, 200, hwnd, NULL, hInstance, NULL);
-	SetWindowText(hStatic, "Siemaneczko!");
+	SetWindowText(hStatic, "Hello!");
 	HWND hStaticIcon = CreateWindowEx(0, "STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_ICON, 100, 5, 48, 48, hwnd, NULL, hInstance, NULL);
 	SendMessage(hStaticIcon, STM_SETICON, (WPARAM)LoadIcon(NULL, IDI_APPLICATION), 0);
 	if (hwnd == NULL)
