@@ -35,22 +35,40 @@ public:
 	~SoundClass();
 
 	bool Initialize(HWND);
+	bool LoadWaveFile(char*, IDirectSoundBuffer8**);
 	void Shutdown();
 	void ShutdownDirectSound();
+	bool PlayWaveFile(IDirectSoundBuffer8**);
 
 private:
 	bool InitializeDirectSound(HWND);
-
-	bool LoadWaveFile(char*, IDirectSoundBuffer8**);
 	void ShutdownWaveFile(IDirectSoundBuffer8**);
 
-	bool PlayWaveFile();
-
-private:
+public:
+	int counter;
 	IDirectSound8* m_DirectSound;
 	IDirectSoundBuffer* m_primaryBuffer;
 
 	IDirectSoundBuffer8* m_secondaryBuffer1;
+	IDirectSoundBuffer8* m_secondaryBuffer2;
+	IDirectSoundBuffer8* m_secondaryBuffer3;
+	IDirectSoundBuffer8* m_secondaryBuffer4;
+	IDirectSoundBuffer8* m_secondaryBuffer5;
+	IDirectSoundBuffer8* m_secondaryBuffer6;
+	IDirectSoundBuffer8* m_secondaryBuffer7;
+	IDirectSoundBuffer8* m_secondaryBuffer8;
+	IDirectSoundBuffer8* m_secondaryBuffer9;
+	IDirectSoundBuffer8* m_secondaryBuffer10;
+	IDirectSoundBuffer8* m_secondaryBuffer11;
+	IDirectSoundBuffer8* m_secondaryBuffer12;
+	IDirectSoundBuffer8* m_secondaryBuffer13;
+	IDirectSoundBuffer8* m_secondaryBuffer14;
+	IDirectSoundBuffer8* m_secondaryBuffer15;
+	IDirectSoundBuffer8* m_secondaryBuffer16;
+	IDirectSoundBuffer8* m_secondaryBuffer17;
+	IDirectSoundBuffer8* m_secondaryBuffer18;
+	IDirectSoundBuffer8* m_secondaryBuffer19;
+	IDirectSoundBuffer8* m_secondaryBuffer20;
 
 };
 
