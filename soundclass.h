@@ -45,7 +45,17 @@ private:
 	void ShutdownWaveFile(IDirectSoundBuffer8**);
 
 public:
-	int counter;
+	int counter1;
+	int counter2;
+	int counter3;
+	int counter4;
+	int counter5;
+	int until_next_note;
+	int until_next_note1;
+	int until_next_note2;
+	int until_next_note3;
+	int until_next_note4;
+	int until_next_note5;
 	IDirectSound8* m_DirectSound;
 	IDirectSoundBuffer* m_primaryBuffer;
 

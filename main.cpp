@@ -8,10 +8,9 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "winmm.lib")
 
-char filenames[8][24] = { "resources\\D6_4.wav", "resources\\G5_8.wav", "resources\\F5_2.wav", "resources\\A5_2.wav", "resources\\A#5_2.wav", "resources\\C6_2.wav", "resources\\D6_2.wav", "resources\\F6_2.wav" };
+char filenames[22][24] = { "resources\\G#5_2.wav", "resources\\C6_2.wav", "resources\\C#6_2.wav", "resources\\F#5_2.wav", "resources\\D#5_4.wav", "resources\\A#5_2.wav", "resources\\B5_2.wav", "resources\\G#5_4.wav", "resources\\G#2_8.wav", "resources\\E2_8.wav", "resources\\F#2_8.wav", "resources\\G#3_2.wav", "resources\\D#4_2.wav", "resources\\G#4_2.wav", "resources\\B4_2.wav", "resources\\E3_2.wav", "resources\\B3_2.wav", "resources\\E4_2.wav", "resources\\F#3_2.wav", "resources\\C#4_2.wav", "resources\\F#4_2.wav", "resources\\A#4_2.wav" };
 char* fn = filenames[0];
 int sound_playing = 5;
-int counter = 0;
 SoundClass m_Sound;
 
 struct layer
@@ -428,28 +427,40 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			layer3_playing = 1;
 			layer4_playing = 1;
 			layer5_playing = 1;
-			counter = 0;
+			m_Sound.counter1 = 0;
+			m_Sound.counter2 = 0;
+			m_Sound.counter3 = 0;
+			m_Sound.counter4 = 0;
+			m_Sound.counter5 = 0;
+			m_Sound.until_next_note = 0;
+			m_Sound.until_next_note1 = 2;
+			m_Sound.until_next_note2 = 0;
+			m_Sound.until_next_note3 = 0;
+			m_Sound.until_next_note4 = 0;
+			m_Sound.until_next_note5 = 0;
 			m_Sound.Initialize(hwnd);
 
-			while (sound_playing)
+		while (sound_playing)
+		{
+			if (m_Sound.until_next_note1 == 0 && layer1_playing != 0)
 			{
-				switch (counter)
+				switch (m_Sound.counter1)
 				{
 				case 0:
 				{
 					if (layer1[layer1_counter].note_length == 0)
 					{
 						layer1_playing = 0;
-						counter += 4;
+						m_Sound.until_next_note1 = 100000;
 						break;
 					}
 					fn += 24 * layer1[layer1_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer1);
 					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer1);
-					Sleep(layer1[layer1_counter].note_length * 120);
 					fn -= 24 * layer1[layer1_counter].note_id;
-					layer1_counter++;
-					counter++;
+					m_Sound.until_next_note1 = layer1[layer1_counter].note_length;
+					layer1_counter += layer1[layer1_counter].note_length;
+					m_Sound.counter1++;
 					break;
 				}
 				case 1:
@@ -457,16 +468,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					if (layer1[layer1_counter].note_length == 0)
 					{
 						layer1_playing = 0;
-						counter += 3;
+						m_Sound.until_next_note1 = 100000;
 						break;
 					}
 					fn += 24 * layer1[layer1_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer2);
 					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer2);
-					Sleep(layer1[layer1_counter].note_length * 120);
 					fn -= 24 * layer1[layer1_counter].note_id;
-					layer1_counter++;
-					counter++;
+					m_Sound.until_next_note1 = layer1[layer1_counter].note_length;
+					layer1_counter += layer1[layer1_counter].note_length;
+					m_Sound.counter1++;
 					break;
 				}
 				case 2:
@@ -474,16 +485,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					if (layer1[layer1_counter].note_length == 0)
 					{
 						layer1_playing = 0;
-						counter += 2;
+						m_Sound.until_next_note1 = 100000;
 						break;
 					}
 					fn += 24 * layer1[layer1_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer3);
 					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer3);
-					Sleep(layer1[layer1_counter].note_length * 120);
 					fn -= 24 * layer1[layer1_counter].note_id;
-					layer1_counter++;
-					counter++;
+					m_Sound.until_next_note1 = layer1[layer1_counter].note_length;
+					layer1_counter += layer1[layer1_counter].note_length;
+					m_Sound.counter1++;
 					break;
 				}
 				case 3:
@@ -491,300 +502,377 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					if (layer1[layer1_counter].note_length == 0)
 					{
 						layer1_playing = 0;
-						counter++;
+						m_Sound.until_next_note1 = 100000;
 						break;
 					}
 					fn += 24 * layer1[layer1_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer4);
 					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer4);
-					Sleep(layer1[layer1_counter].note_length * 120);
 					fn -= 24 * layer1[layer1_counter].note_id;
-					layer1_counter++;
-					counter++;
-					break;
-				}
-				case 4:
-				{
-					if (layer2[layer2_counter].note_length == 0)
-					{
-						layer2_playing = 0;
-						counter += 4;
-						break;
-					}
-					fn += 24 * layer2[layer2_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer5);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer5);
-					Sleep(layer2[layer2_counter].note_length * 120);
-					fn -= 24 * layer2[layer2_counter].note_id;
-					layer2_counter++;
-					counter++;
-					break;
-				}
-				case 5:
-				{
-					if (layer2[layer2_counter].note_length == 0)
-					{
-						layer2_playing = 0;
-						counter += 3;
-						break;
-					}
-					fn += 24 * layer2[layer2_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer6);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer6);
-					Sleep(layer2[layer2_counter].note_length * 120);
-					fn -= 24 * layer2[layer2_counter].note_id;
-					layer2_counter++;
-					counter++;
-					break;
-				}
-				case 6:
-				{
-					if (layer2[layer2_counter].note_length == 0)
-					{
-						layer2_playing = 0;
-						counter += 2;
-						break;
-					}
-					fn += 24 * layer2[layer2_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer7);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer7);
-					Sleep(layer2[layer2_counter].note_length * 120);
-					fn -= 24 * layer2[layer2_counter].note_id;
-					layer2_counter++;
-					counter++;
-					break;
-				}
-				case 7:
-				{
-					if (layer2[layer2_counter].note_length == 0)
-					{
-						layer2_playing = 0;
-						counter++;
-						break;
-					}
-					fn += 24 * layer2[layer2_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer8);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer8);
-					Sleep(layer2[layer2_counter].note_length * 120);
-					fn -= 24 * layer2[layer2_counter].note_id;
-					layer2_counter++;
-					counter++;
-					break;
-				}
-				case 8:
-				{
-					if (layer3[layer3_counter].note_length == 0)
-					{
-						layer3_playing = 0;
-						counter += 4;
-						break;
-					}
-					fn += 24 * layer3[layer3_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer9);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer9);
-					Sleep(layer3[layer3_counter].note_length * 120);
-					fn -= 24 * layer3[layer3_counter].note_id;
-					layer3_counter++;
-					counter++;
-					break;
-				}
-				case 9:
-				{
-					if (layer3[layer3_counter].note_length == 0)
-					{
-						layer3_playing = 0;
-						counter += 3;
-						break;
-					}
-					fn += 24 * layer3[layer3_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer10);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer10);
-					Sleep(layer3[layer3_counter].note_length * 120);
-					fn -= 24 * layer3[layer3_counter].note_id;
-					layer3_counter++;
-					counter++;
-					break;
-				}
-				case 10:
-				{
-					if (layer3[layer3_counter].note_length == 0)
-					{
-						layer3_playing = 0;
-						counter += 2;
-						break;
-					}
-					fn += 24 * layer3[layer3_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer11);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer11);
-					Sleep(layer3[layer3_counter].note_length * 120);
-					fn -= 24 * layer3[layer3_counter].note_id;
-					layer3_counter++;
-					counter++;
-					break;
-				}
-				case 11:
-				{
-					if (layer3[layer3_counter].note_length == 0)
-					{
-						layer3_playing = 0;
-						counter++;
-						break;
-					}
-					fn += 24 * layer3[layer3_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer12);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer12);
-					Sleep(layer3[layer3_counter].note_length * 120);
-					fn -= 24 * layer3[layer3_counter].note_id;
-					layer3_counter++;
-					counter++;
-					break;
-				}
-				case 12:
-				{
-					if (layer4[layer4_counter].note_length == 0)
-					{
-						layer4_playing = 0;
-						counter += 4;
-						break;
-					}
-					fn += 24 * layer4[layer4_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer13);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer13);
-					Sleep(layer4[layer4_counter].note_length * 120);
-					fn -= 24 * layer4[layer4_counter].note_id;
-					layer4_counter++;
-					counter++;
-					break;
-				}
-				case 13:
-				{
-					if (layer4[layer4_counter].note_length == 0)
-					{
-						layer4_playing = 0;
-						counter += 3;
-						break;
-					}
-					fn += 24 * layer4[layer4_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer14);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer14);
-					Sleep(layer4[layer4_counter].note_length * 120);
-					fn -= 24 * layer4[layer4_counter].note_id;
-					layer4_counter++;
-					counter++;
-					break;
-				}
-				case 14:
-				{
-					if (layer4[layer4_counter].note_length == 0)
-					{
-						layer4_playing = 0;
-						counter += 2;
-						break;
-					}
-					fn += 24 * layer4[layer4_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer15);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer15);
-					Sleep(layer4[layer4_counter].note_length * 120);
-					fn -= 24 * layer4[layer4_counter].note_id;
-					layer4_counter++;
-					counter++;
-					break;
-				}
-				case 15:
-				{
-					if (layer4[layer4_counter].note_length == 0)
-					{
-						layer4_playing = 0;
-						counter++;
-						break;
-					}
-					fn += 24 * layer4[layer4_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer16);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer16);
-					Sleep(layer4[layer4_counter].note_length * 120);
-					fn -= 24 * layer4[layer4_counter].note_id;
-					layer4_counter++;
-					counter++;
-					break;
-				}
-				case 16:
-				{
-					if (layer5[layer5_counter].note_length == 0)
-					{
-						layer5_playing = 0;
-						counter = 0;
-						break;
-					}
-					fn += 24 * layer5[layer5_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer17);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer17);
-					Sleep(layer5[layer5_counter].note_length * 120);
-					fn -= 24 * layer5[layer5_counter].note_id;
-					layer5_counter++;
-					counter++;
-					break;
-				}
-				case 17:
-				{
-					if (layer5[layer5_counter].note_length == 0)
-					{
-						layer5_playing = 0;
-						counter = 0;
-						break;
-					}
-					fn += 24 * layer5[layer5_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer18);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer18);
-					Sleep(layer5[layer5_counter].note_length * 120);
-					fn -= 24 * layer5[layer5_counter].note_id;
-					layer5_counter++;
-					counter++;
-					break;
-				}
-				case 18:
-				{
-					if (layer5[layer5_counter].note_length == 0)
-					{
-						layer5_playing = 0;
-						counter = 0;
-						break;
-					}
-					fn += 24 * layer5[layer5_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer19);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer19);
-					Sleep(layer5[layer5_counter].note_length * 120);
-					fn -= 24 * layer5[layer5_counter].note_id;
-					layer5_counter++;
-					counter++;
-					break;
-				}
-				case 19:
-				{
-					if (layer5[layer5_counter].note_length == 0)
-					{
-						layer5_playing = 0;
-						counter = 0;
-						break;
-					}
-					fn += 24 * layer5[layer5_counter].note_id;
-					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer20);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer20);
-					Sleep(layer5[layer5_counter].note_length * 120);
-					fn -= 24 * layer5[layer5_counter].note_id;
-					layer5_counter++;
-					counter = 0;
+					m_Sound.until_next_note1 = layer1[layer1_counter].note_length;
+					layer1_counter += layer1[layer1_counter].note_length;
+					m_Sound.counter1 = 0;
 					break;
 				}
 				default:
 				{
 					break;
 				}
-				
+				}
+			}
+
+			if (m_Sound.until_next_note2 == 0 && layer2_playing!=0)
+			{
+				switch (m_Sound.counter2)
+				{
+				case 0:
+				{
+					if (layer2[layer2_counter].note_length == 0)
+					{
+						layer2_playing = 0;
+						m_Sound.until_next_note2 = 100000;
+						break;
+					}
+					fn += 24 * layer2[layer2_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer5);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer5);
+					fn -= 24 * layer2[layer2_counter].note_id;
+					m_Sound.until_next_note2 = layer2[layer2_counter].note_length;
+					layer2_counter += layer2[layer2_counter].note_length;
+					m_Sound.counter2++;
+					break;
 				}
 
-				sound_playing = layer1_playing + layer2_playing + layer3_playing + layer4_playing + layer5_playing;
+				case 1:
+				{
+					if (layer2[layer2_counter].note_length == 0)
+					{
+						layer2_playing = 0;
+						m_Sound.until_next_note2 = 100000;
+						break;
+					}
+					fn += 24 * layer2[layer2_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer6);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer6);
+					fn -= 24 * layer2[layer2_counter].note_id;
+					m_Sound.until_next_note2 = layer2[layer2_counter].note_length;
+					layer2_counter += layer2[layer2_counter].note_length;
+					m_Sound.counter2++;
+					break;
+				}
+				case 2:
+				{
+					if (layer2[layer2_counter].note_length == 0)
+					{
+						layer2_playing = 0;
+						m_Sound.until_next_note2 = 100000;
+						break;
+					}
+					fn += 24 * layer2[layer2_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer7);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer7);
+					fn -= 24 * layer2[layer2_counter].note_id;
+					m_Sound.until_next_note2 = layer2[layer2_counter].note_length;
+					layer2_counter += layer2[layer2_counter].note_length;
+					m_Sound.counter2++;
+					break;
+				}
+				case 3:
+				{
+					if (layer2[layer2_counter].note_length == 0)
+					{
+						layer2_playing = 0;
+						m_Sound.until_next_note2 = 100000;
+						break;
+					}
+					fn += 24 * layer2[layer2_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer8);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer8);
+					fn -= 24 * layer2[layer2_counter].note_id;
+					m_Sound.until_next_note2 = layer2[layer2_counter].note_length;
+					layer2_counter += layer2[layer2_counter].note_length;
+					m_Sound.counter2 = 0;
+					break;
+				}
+				default:
+				{
+					break;
+				}
+				}
 			}
-			Sleep(6000);
+
+			if (m_Sound.until_next_note3 == 0 && layer3_playing!=0)
+			{
+				switch (m_Sound.counter3)
+				{
+				case 0:
+				{
+					if (layer3[layer3_counter].note_length == 0)
+					{
+						layer3_playing = 0;
+						m_Sound.until_next_note3 = 100000;
+						break;
+					}
+					fn += 24 * layer3[layer3_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer9);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer9);
+					fn -= 24 * layer3[layer3_counter].note_id;
+					m_Sound.until_next_note3 = layer3[layer3_counter].note_length;
+					layer3_counter += layer3[layer3_counter].note_length;
+					m_Sound.counter3++;
+					break;
+				}
+				case 1:
+				{
+					if (layer3[layer3_counter].note_length == 0)
+					{
+						layer3_playing = 0;
+						m_Sound.until_next_note3 = 100000;
+						break;
+					}
+					fn += 24 * layer3[layer3_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer10);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer10);
+					fn -= 24 * layer3[layer3_counter].note_id;
+					m_Sound.until_next_note3 = layer3[layer3_counter].note_length;
+					layer3_counter += layer3[layer3_counter].note_length;
+					m_Sound.counter3++;
+					break;
+				}
+				case 2:
+				{
+					if (layer3[layer3_counter].note_length == 0)
+					{
+						layer3_playing = 0;
+						break;
+					}
+					fn += 24 * layer3[layer3_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer11);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer11);
+					fn -= 24 * layer3[layer3_counter].note_id;
+					m_Sound.until_next_note3 = layer3[layer3_counter].note_length;
+					layer3_counter += layer3[layer3_counter].note_length;
+					m_Sound.counter3++;
+					break;
+				}
+				case 3:
+				{
+					if (layer3[layer3_counter].note_length == 0)
+					{
+						layer3_playing = 0;
+						m_Sound.until_next_note3 = 100000;
+						break;
+					}
+					fn += 24 * layer3[layer3_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer12);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer12);
+					fn -= 24 * layer3[layer3_counter].note_id;
+					m_Sound.until_next_note3 = layer3[layer3_counter].note_length;
+					layer3_counter += layer3[layer3_counter].note_length;
+					m_Sound.counter3 = 0;
+					break;
+				}
+				default:
+				{
+					break;
+				}
+				}
+			}
+
+			if (m_Sound.until_next_note4 == 0 && layer4_playing!=0)
+			{
+				switch (m_Sound.counter4)
+				{
+				case 0:
+				{
+					if (layer4[layer4_counter].note_length == 0)
+					{
+						layer4_playing = 0;
+						m_Sound.until_next_note4 = 100000;
+						break;
+					}
+					fn += 24 * layer4[layer4_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer13);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer13);
+					fn -= 24 * layer4[layer4_counter].note_id;
+					m_Sound.until_next_note4 = layer4[layer4_counter].note_length;
+					layer4_counter += layer4[layer4_counter].note_length;
+					m_Sound.counter4++;
+					break;
+				}
+				case 1:
+				{
+					if (layer4[layer4_counter].note_length == 0)
+					{
+						layer4_playing = 0;
+						m_Sound.until_next_note4 = 100000;
+						break;
+					}
+					fn += 24 * layer4[layer4_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer14);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer14);
+					fn -= 24 * layer4[layer4_counter].note_id;
+					m_Sound.until_next_note4 = layer4[layer4_counter].note_length;
+					layer4_counter += layer4[layer4_counter].note_length;
+					m_Sound.counter4++;
+					break;
+				}
+				case 2:
+				{
+					if (layer4[layer4_counter].note_length == 0)
+					{
+						layer4_playing = 0;
+						m_Sound.until_next_note4 = 100000;
+						break;
+					}
+					fn += 24 * layer4[layer4_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer15);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer15);
+					fn -= 24 * layer4[layer4_counter].note_id;
+					m_Sound.until_next_note4 = layer4[layer4_counter].note_length;
+					layer4_counter += layer4[layer4_counter].note_length;
+					m_Sound.counter4++;
+					break;
+				}
+				case 3:
+				{
+					if (layer4[layer4_counter].note_length == 0)
+					{
+						layer4_playing = 0;
+						m_Sound.until_next_note4 = 100000;
+						break;
+					}
+					fn += 24 * layer4[layer4_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer16);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer16);
+					fn -= 24 * layer4[layer4_counter].note_id;
+					m_Sound.until_next_note4 = layer4[layer4_counter].note_length;
+					layer4_counter += layer4[layer4_counter].note_length;
+					m_Sound.counter4 = 0;
+					break;
+				}
+				default:
+				{
+					break;
+				}
+				}
+			}
+
+			if (m_Sound.until_next_note5 == 0 && layer5_playing!=0)
+			{
+				switch (m_Sound.counter5)
+				{
+				case 0:
+				{
+					if (layer5[layer5_counter].note_length == 0)
+					{
+						layer5_playing = 0;
+						m_Sound.until_next_note5 = 100000;
+						break;
+					}
+					fn += 24 * layer5[layer5_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer17);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer17);
+					fn -= 24 * layer5[layer5_counter].note_id;
+					m_Sound.until_next_note5 = layer5[layer5_counter].note_length;
+					layer5_counter += layer5[layer5_counter].note_length;
+					m_Sound.counter5++;
+					break;
+				}
+				case 1:
+				{
+					if (layer5[layer5_counter].note_length == 0)
+					{
+						layer5_playing = 0;
+						m_Sound.until_next_note5 = 100000;
+						break;
+					}
+					fn += 24 * layer5[layer5_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer18);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer18);
+					fn -= 24 * layer5[layer5_counter].note_id;
+					m_Sound.until_next_note5 = layer5[layer5_counter].note_length;
+					layer5_counter += layer5[layer5_counter].note_length;
+					m_Sound.counter5++;
+					break;
+				}
+				case 2:
+				{
+					if (layer5[layer5_counter].note_length == 0)
+					{
+						layer5_playing = 0;
+						m_Sound.until_next_note5 = 100000;
+						break;
+					}
+					fn += 24 * layer5[layer5_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer19);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer19);
+					fn -= 24 * layer5[layer5_counter].note_id;
+					m_Sound.until_next_note5 = layer5[layer5_counter].note_length;
+					layer5_counter += layer5[layer5_counter].note_length;
+					m_Sound.counter5++;
+					break;
+				}
+				case 3:
+				{
+					if (layer5[layer5_counter].note_length == 0)
+					{
+						layer5_playing = 0;
+						m_Sound.until_next_note5 = 100000;
+						break;
+					}
+					fn += 24 * layer5[layer5_counter].note_id;
+					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer20);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer20);
+					fn -= 24 * layer5[layer5_counter].note_id;
+					m_Sound.until_next_note5 = layer5[layer5_counter].note_length;
+					layer5_counter += layer5[layer5_counter].note_length;
+					m_Sound.counter5 = 0;
+					break;
+				}
+				default:
+				{
+					break;
+				}
+				}
+			}
+
+			sound_playing = layer1_playing + layer2_playing + layer3_playing + layer4_playing + layer5_playing;
+
+				if (m_Sound.until_next_note1 > 0 && m_Sound.until_next_note2 > 0 && m_Sound.until_next_note3 > 0 && m_Sound.until_next_note4 > 0 && m_Sound.until_next_note5 > 0)
+				{
+					if (sound_playing == 0)
+					{
+						m_Sound.until_next_note1 = 0;
+					}
+					m_Sound.until_next_note = m_Sound.until_next_note1;
+					if (m_Sound.until_next_note2 < m_Sound.until_next_note)
+					{
+						m_Sound.until_next_note = m_Sound.until_next_note2;
+					}
+					else if (m_Sound.until_next_note3 < m_Sound.until_next_note)
+					{
+						m_Sound.until_next_note = m_Sound.until_next_note3;
+					}
+					else if (m_Sound.until_next_note4 < m_Sound.until_next_note)
+					{
+						m_Sound.until_next_note = m_Sound.until_next_note4;
+					}
+					else if (m_Sound.until_next_note5 < m_Sound.until_next_note)
+					{
+						m_Sound.until_next_note = m_Sound.until_next_note5;
+					}
+					m_Sound.until_next_note1 -= m_Sound.until_next_note;
+					m_Sound.until_next_note2 -= m_Sound.until_next_note;
+					m_Sound.until_next_note3 -= m_Sound.until_next_note;
+					m_Sound.until_next_note4 -= m_Sound.until_next_note;
+					m_Sound.until_next_note5 -= m_Sound.until_next_note;
+					Sleep(m_Sound.until_next_note * 116);
+					m_Sound.until_next_note = 0;
+				}
+
+		}
+			Sleep(1000);
 			m_Sound.Shutdown();
 			m_Sound.ShutdownDirectSound();
 			break;
@@ -853,23 +941,73 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	//test
 	layer1[0].note_id = 0;
-	layer1[0].note_length = 4;
-	layer1[1].note_id = 1;
-	layer1[1].note_length = 8;
-	layer1[2].note_id = 2;
+	layer1[0].note_length = 2;
+	layer1[2].note_id = 1;
 	layer1[2].note_length = 2;
-	layer1[3].note_id = 1;
-	layer1[3].note_length = 8;
-	layer1[4].note_id = 3;
+	layer1[4].note_id = 2;
 	layer1[4].note_length = 2;
-	layer1[5].note_id = 4;
-	layer1[5].note_length = 2;
-	layer1[6].note_id = 5;
+	layer1[6].note_id = 0;
 	layer1[6].note_length = 2;
-	layer1[7].note_id = 6;
-	layer1[7].note_length = 2;
-	layer1[8].note_id = 7;
+	layer1[8].note_id = 3;
 	layer1[8].note_length = 2;
+	layer1[10].note_id = 4;
+	layer1[10].note_length = 4;
+	layer1[14].note_id = 5;
+	layer1[14].note_length = 2;
+	layer1[16].note_id = 0;
+	layer1[16].note_length = 2;
+	layer1[18].note_id = 5;
+	layer1[18].note_length = 2;
+	layer1[20].note_id = 6;
+	layer1[20].note_length = 2;
+	layer1[22].note_id = 0;
+	layer1[22].note_length = 2;
+	layer1[24].note_id = 3;
+	layer1[24].note_length = 2;
+	layer1[26].note_id = 7;
+	layer1[26].note_length = 4;
+
+	layer2[0].note_id = 8;
+	layer2[0].note_length = 8;
+	layer2[8].note_id = 9;
+	layer2[8].note_length = 8;
+	layer2[16].note_id = 10;
+	layer2[16].note_length = 8;
+	layer2[24].note_id = 8;
+	layer2[24].note_length = 8;
+
+	layer3[0].note_id = 11;
+	layer3[0].note_length = 2;
+	layer3[2].note_id = 12;
+	layer3[2].note_length = 2;
+	layer3[4].note_id = 13;
+	layer3[4].note_length = 2;
+	layer3[6].note_id = 14;
+	layer3[6].note_length = 2;
+	layer3[8].note_id = 15;
+	layer3[8].note_length = 2;
+	layer3[10].note_id = 16;
+	layer3[10].note_length = 2;
+	layer3[12].note_id = 17;
+	layer3[12].note_length = 2;
+	layer3[14].note_id = 13;
+	layer3[14].note_length = 2;
+	layer3[16].note_id = 18;
+	layer3[16].note_length = 2;
+	layer3[18].note_id = 19;
+	layer3[18].note_length = 2;
+	layer3[20].note_id = 20;
+	layer3[20].note_length = 2;
+	layer3[22].note_id = 21;
+	layer3[22].note_length = 2;
+	layer3[24].note_id = 11;
+	layer3[24].note_length = 2;
+	layer3[26].note_id = 12;
+	layer3[26].note_length = 2;
+	layer3[28].note_id = 13;
+	layer3[28].note_length = 2;
+	layer3[30].note_id = 14;
+	layer3[30].note_length = 2;
 
 	hwnd = CreateWindowEx(WS_EX_WINDOWEDGE, NazwaKlasy, "Main window", WS_OVERLAPPEDWINDOW+WS_HSCROLL+WS_VSCROLL, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, NULL, NULL, hInstance, NULL);
 
