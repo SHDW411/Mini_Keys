@@ -12,6 +12,7 @@ class SoundClass
 {
 private:
 
+	//nag³ówek pliku dŸwiêkowego, potrzebny do sprawdzenia, czy plik dŸwiêkowy ma odpowiednie parametry
 	struct WaveHeaderType
 	{
 		char chunkId[4];
@@ -45,6 +46,8 @@ private:
 	void ShutdownWaveFile(IDirectSoundBuffer8**);
 
 public:
+
+	//zmienne potrzebne przy odtwarzaniu ca³ej melodii
 	int counter1;
 	int counter2;
 	int counter3;
@@ -56,9 +59,13 @@ public:
 	int until_next_note3;
 	int until_next_note4;
 	int until_next_note5;
+
 	IDirectSound8* m_DirectSound;
+
+	//master
 	IDirectSoundBuffer* m_primaryBuffer;
 
+	//sk³adowe bufory mastera, po 4 na wartwê dŸwiêku
 	IDirectSoundBuffer8* m_secondaryBuffer1;
 	IDirectSoundBuffer8* m_secondaryBuffer2;
 	IDirectSoundBuffer8* m_secondaryBuffer3;

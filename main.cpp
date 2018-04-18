@@ -8,8 +8,11 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "winmm.lib")
 
+//tabelka z nazwami plików dŸwiêkowych
 char filenames[22][24] = { "resources\\G#5_2.wav", "resources\\C6_2.wav", "resources\\C#6_2.wav", "resources\\F#5_2.wav", "resources\\D#5_4.wav", "resources\\A#5_2.wav", "resources\\B5_2.wav", "resources\\G#5_4.wav", "resources\\G#2_8.wav", "resources\\E2_8.wav", "resources\\F#2_8.wav", "resources\\G#3_2.wav", "resources\\D#4_2.wav", "resources\\G#4_2.wav", "resources\\B4_2.wav", "resources\\E3_2.wav", "resources\\B3_2.wav", "resources\\E4_2.wav", "resources\\F#3_2.wav", "resources\\C#4_2.wav", "resources\\F#4_2.wav", "resources\\A#4_2.wav" };
+//wskaŸnik na powy¿sz¹ tabelkê, potrzebny ¿eby przekazaæ nazwy do funkcji
 char* fn = filenames[0];
+//zmienna do sprawdzania, czy na którejœ warstwie s¹ jeszcze jakieœ dŸwiêki
 int sound_playing = 5;
 SoundClass m_Sound;
 
@@ -19,6 +22,7 @@ struct layer
 	unsigned int note_id;
 };
 
+//5 warstw dŸwiêku z licznikami ich aktualnej pozycji w czasie
 layer layer1[1000], layer2[1000], layer3[1000], layer4[1000], layer5[1000];
 int layer1_counter = 0;
 int layer2_counter = 0;
@@ -31,6 +35,7 @@ bool layer3_playing = 1;
 bool layer4_playing = 1;
 bool layer5_playing = 1;
 
+//pocz¹tek systemu odtwarzania dŸwiêku
 SoundClass::SoundClass()
 {
 	m_DirectSound = 0;
@@ -398,12 +403,15 @@ bool SoundClass::PlayWaveFile(IDirectSoundBuffer8** secondaryBuffer)
 
 	return true;
 }
-
+//koniec systemu odtwarzania dŸwiêku
 
 MSG info;
+
+//identyfikatory przycisków
 #define ID_PRZYCISK1 101
 #define ID_PRZYCISK2 102
 
+//funkcja obs³uguj¹ca wszystko, co siê dzieje w okienku
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	
@@ -412,10 +420,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		switch (wParam)
 		{
+			//przycisk odtwarzaj¹cy utworzon¹ melodiê
 		case ID_PRZYCISK1:
 		{
 			MessageBox(hwnd, "No nieŸle", "Info", MB_ICONINFORMATION);
 
+			//przygotowanie wszystkich zmiennych potrzebnych do odtwarzania
 			sound_playing = 5;
 			layer1_counter = 0;
 			layer2_counter = 0;
@@ -438,28 +448,46 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			m_Sound.until_next_note3 = 0;
 			m_Sound.until_next_note4 = 0;
 			m_Sound.until_next_note5 = 0;
+
+			//inicjalizacja systemu obs³ugi dŸwiêku
 			m_Sound.Initialize(hwnd);
 
+			//pêtla odtwarzaj¹ca dŸwiêk ze wszystkich warstw
 		while (sound_playing)
 		{
+			//je¿eli czas do nastêpnej nuty=0 i nadal s¹ jeszcze jakieœ nuty do odtworzenia
 			if (m_Sound.until_next_note1 == 0 && layer1_playing != 0)
 			{
+				//odtwarzanie nut na zmianê w ka¿dym z 4 buforów, ¿eby dŸwiêk siê nagle nie urywa³ przy za³adowaniu nastêpnego do bufora
 				switch (m_Sound.counter1)
 				{
 				case 0:
 				{
+					//je¿eli nie ma wiêcej dŸwiêków na warstwie, zmienna zmieniana na "false"
 					if (layer1[layer1_counter].note_length == 0)
 					{
 						layer1_playing = 0;
+						//niewa¿ne xd
 						m_Sound.until_next_note1 = 100000;
 						break;
 					}
+					//wskaŸnik na nazwy plików przechodzi na nazwê pliku dŸwiêkowego aktualnej nuty
 					fn += 24 * layer1[layer1_counter].note_id;
+
+					//nuta jest wczytywana do bufora i odtwarzana
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer1);
 					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer1);
+
+					//wskaŸnik wraca na domyœln¹ pozycjê
 					fn -= 24 * layer1[layer1_counter].note_id;
+
+					//sprawdzana jest odleg³oœæ w czasie do nastêpnego dŸwiêku na warstwie
 					m_Sound.until_next_note1 = layer1[layer1_counter].note_length;
+
+					//licznik okreœlaj¹cy pozycjê w czasie na warstwie przechodzi na nastêpny dŸwiêk
 					layer1_counter += layer1[layer1_counter].note_length;
+
+					//zmienna okreœlaj¹ca, z którego bufora korzystamy
 					m_Sound.counter1++;
 					break;
 				}
@@ -837,8 +865,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				}
 			}
 
+			//sprawdzenie, czy na którejœ warstwie jest jeszcze jakiœ dŸwiêk
 			sound_playing = layer1_playing + layer2_playing + layer3_playing + layer4_playing + layer5_playing;
 
+			//je¿eli odleg³oœæ w czasie do nastêpnej nuty na ka¿dej warstwie jest>0, program czeka przez czas pozosta³y do nastêpnego dŸwiêku
 				if (m_Sound.until_next_note1 > 0 && m_Sound.until_next_note2 > 0 && m_Sound.until_next_note3 > 0 && m_Sound.until_next_note4 > 0 && m_Sound.until_next_note5 > 0)
 				{
 					if (sound_playing == 0)
@@ -862,6 +892,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						m_Sound.until_next_note = m_Sound.until_next_note5;
 					}
+
+					//i zmienia pozosta³e odleg³oœci w czasie
 					m_Sound.until_next_note1 -= m_Sound.until_next_note;
 					m_Sound.until_next_note2 -= m_Sound.until_next_note;
 					m_Sound.until_next_note3 -= m_Sound.until_next_note;
@@ -872,7 +904,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				}
 
 		}
+
+		//po zakoñczeniu odtwarzania program czeka jeszcze sekundê na zanikniêcie wszystkich dŸwiêków, pog³osu itp.
 			Sleep(1000);
+
+		//i sprz¹ta po systemie odtwarzania dŸwiêku
 			m_Sound.Shutdown();
 			m_Sound.ShutdownDirectSound();
 			break;
@@ -925,6 +961,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	HWND hwnd, hPrzycisk1, hPrzycisk2;
 
+	//wyczyszczenie warstw, ¿eby by³y puste przy rozpoczêciu programu
 	for (int i = 0; i < 1000; i++)
 	{
 		layer1[i].note_id = 0;
