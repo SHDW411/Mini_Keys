@@ -8,11 +8,8 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "winmm.lib")
 
-//tabelka z nazwami plików dŸwiêkowych
 char filenames[22][24] = { "resources\\G#5_2.wav", "resources\\C6_2.wav", "resources\\C#6_2.wav", "resources\\F#5_2.wav", "resources\\D#5_4.wav", "resources\\A#5_2.wav", "resources\\B5_2.wav", "resources\\G#5_4.wav", "resources\\G#2_8.wav", "resources\\E2_8.wav", "resources\\F#2_8.wav", "resources\\G#3_2.wav", "resources\\D#4_2.wav", "resources\\G#4_2.wav", "resources\\B4_2.wav", "resources\\E3_2.wav", "resources\\B3_2.wav", "resources\\E4_2.wav", "resources\\F#3_2.wav", "resources\\C#4_2.wav", "resources\\F#4_2.wav", "resources\\A#4_2.wav" };
-//wskaŸnik na powy¿sz¹ tabelkê, potrzebny ¿eby przekazaæ nazwy do funkcji
 char* fn = filenames[0];
-//zmienna do sprawdzania, czy na którejœ warstwie s¹ jeszcze jakieœ dŸwiêki
 int sound_playing = 5;
 SoundClass m_Sound;
 
@@ -20,9 +17,9 @@ struct layer
 {
 	unsigned int note_length;
 	unsigned int note_id;
+	long note_volume;
 };
 
-//5 warstw dŸwiêku z licznikami ich aktualnej pozycji w czasie
 layer layer1[1000], layer2[1000], layer3[1000], layer4[1000], layer5[1000];
 int layer1_counter = 0;
 int layer2_counter = 0;
@@ -35,7 +32,6 @@ bool layer3_playing = 1;
 bool layer4_playing = 1;
 bool layer5_playing = 1;
 
-//pocz¹tek systemu odtwarzania dŸwiêku
 SoundClass::SoundClass()
 {
 	m_DirectSound = 0;
@@ -288,7 +284,7 @@ bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuf
 
 	// Set the buffer description of the secondary sound buffer that the wave file will be loaded onto.
 	bufferDesc.dwSize = sizeof(DSBUFFERDESC);
-	bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME;
+	bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_GLOBALFOCUS;
 	bufferDesc.dwBufferBytes = waveFileHeader.dataSize;
 	bufferDesc.dwReserved = 0;
 	bufferDesc.lpwfxFormat = &waveFormat;
@@ -372,7 +368,7 @@ void SoundClass::ShutdownWaveFile(IDirectSoundBuffer8** secondaryBuffer)
 	return;
 }
 
-bool SoundClass::PlayWaveFile(IDirectSoundBuffer8** secondaryBuffer)
+bool SoundClass::PlayWaveFile(IDirectSoundBuffer8** secondaryBuffer, long volume)
 {
 	HRESULT result;
 
@@ -386,7 +382,7 @@ bool SoundClass::PlayWaveFile(IDirectSoundBuffer8** secondaryBuffer)
 	}
 
 	// Set volume of the buffer to 100%.
-	result = (*secondaryBuffer)->SetVolume(DSBVOLUME_MAX);
+	result = (*secondaryBuffer)->SetVolume(DSBVOLUME_MAX + volume);
 
 	if (FAILED(result))
 	{
@@ -403,29 +399,26 @@ bool SoundClass::PlayWaveFile(IDirectSoundBuffer8** secondaryBuffer)
 
 	return true;
 }
-//koniec systemu odtwarzania dŸwiêku
+
 
 MSG info;
-
-//identyfikatory przycisków
 #define ID_PRZYCISK1 101
 #define ID_PRZYCISK2 102
 
-//funkcja obs³uguj¹ca wszystko, co siê dzieje w okienku
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	
 	switch (msg)
 	{
 	case WM_COMMAND:
+		
 		switch (wParam)
 		{
-			//przycisk odtwarzaj¹cy utworzon¹ melodiê
+		
 		case ID_PRZYCISK1:
 		{
 			MessageBox(hwnd, "No nieŸle", "Info", MB_ICONINFORMATION);
 
-			//przygotowanie wszystkich zmiennych potrzebnych do odtwarzania
 			sound_playing = 5;
 			layer1_counter = 0;
 			layer2_counter = 0;
@@ -448,46 +441,28 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			m_Sound.until_next_note3 = 0;
 			m_Sound.until_next_note4 = 0;
 			m_Sound.until_next_note5 = 0;
-
-			//inicjalizacja systemu obs³ugi dŸwiêku
 			m_Sound.Initialize(hwnd);
 
-			//pêtla odtwarzaj¹ca dŸwiêk ze wszystkich warstw
 		while (sound_playing)
 		{
-			//je¿eli czas do nastêpnej nuty=0 i nadal s¹ jeszcze jakieœ nuty do odtworzenia
 			if (m_Sound.until_next_note1 == 0 && layer1_playing != 0)
 			{
-				//odtwarzanie nut na zmianê w ka¿dym z 4 buforów, ¿eby dŸwiêk siê nagle nie urywa³ przy za³adowaniu nastêpnego do bufora
 				switch (m_Sound.counter1)
 				{
 				case 0:
 				{
-					//je¿eli nie ma wiêcej dŸwiêków na warstwie, zmienna zmieniana na "false"
 					if (layer1[layer1_counter].note_length == 0)
 					{
 						layer1_playing = 0;
-						//niewa¿ne xd
 						m_Sound.until_next_note1 = 100000;
 						break;
 					}
-					//wskaŸnik na nazwy plików przechodzi na nazwê pliku dŸwiêkowego aktualnej nuty
 					fn += 24 * layer1[layer1_counter].note_id;
-
-					//nuta jest wczytywana do bufora i odtwarzana
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer1);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer1);
-
-					//wskaŸnik wraca na domyœln¹ pozycjê
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer1, layer1[layer1_counter].note_volume);
 					fn -= 24 * layer1[layer1_counter].note_id;
-
-					//sprawdzana jest odleg³oœæ w czasie do nastêpnego dŸwiêku na warstwie
 					m_Sound.until_next_note1 = layer1[layer1_counter].note_length;
-
-					//licznik okreœlaj¹cy pozycjê w czasie na warstwie przechodzi na nastêpny dŸwiêk
 					layer1_counter += layer1[layer1_counter].note_length;
-
-					//zmienna okreœlaj¹ca, z którego bufora korzystamy
 					m_Sound.counter1++;
 					break;
 				}
@@ -501,7 +476,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer1[layer1_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer2);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer2);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer2, layer1[layer1_counter].note_volume);
 					fn -= 24 * layer1[layer1_counter].note_id;
 					m_Sound.until_next_note1 = layer1[layer1_counter].note_length;
 					layer1_counter += layer1[layer1_counter].note_length;
@@ -518,7 +493,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer1[layer1_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer3);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer3);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer3, layer1[layer1_counter].note_volume);
 					fn -= 24 * layer1[layer1_counter].note_id;
 					m_Sound.until_next_note1 = layer1[layer1_counter].note_length;
 					layer1_counter += layer1[layer1_counter].note_length;
@@ -535,7 +510,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer1[layer1_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer4);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer4);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer4, layer1[layer1_counter].note_volume);
 					fn -= 24 * layer1[layer1_counter].note_id;
 					m_Sound.until_next_note1 = layer1[layer1_counter].note_length;
 					layer1_counter += layer1[layer1_counter].note_length;
@@ -563,7 +538,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer2[layer2_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer5);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer5);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer5, layer2[layer2_counter].note_volume);
 					fn -= 24 * layer2[layer2_counter].note_id;
 					m_Sound.until_next_note2 = layer2[layer2_counter].note_length;
 					layer2_counter += layer2[layer2_counter].note_length;
@@ -581,7 +556,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer2[layer2_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer6);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer6);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer6, layer2[layer2_counter].note_volume);
 					fn -= 24 * layer2[layer2_counter].note_id;
 					m_Sound.until_next_note2 = layer2[layer2_counter].note_length;
 					layer2_counter += layer2[layer2_counter].note_length;
@@ -598,7 +573,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer2[layer2_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer7);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer7);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer7, layer2[layer2_counter].note_volume);
 					fn -= 24 * layer2[layer2_counter].note_id;
 					m_Sound.until_next_note2 = layer2[layer2_counter].note_length;
 					layer2_counter += layer2[layer2_counter].note_length;
@@ -615,7 +590,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer2[layer2_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer8);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer8);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer8, layer2[layer2_counter].note_volume);
 					fn -= 24 * layer2[layer2_counter].note_id;
 					m_Sound.until_next_note2 = layer2[layer2_counter].note_length;
 					layer2_counter += layer2[layer2_counter].note_length;
@@ -643,7 +618,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer3[layer3_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer9);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer9);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer9, layer3[layer3_counter].note_volume);
 					fn -= 24 * layer3[layer3_counter].note_id;
 					m_Sound.until_next_note3 = layer3[layer3_counter].note_length;
 					layer3_counter += layer3[layer3_counter].note_length;
@@ -660,7 +635,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer3[layer3_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer10);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer10);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer10, layer3[layer3_counter].note_volume);
 					fn -= 24 * layer3[layer3_counter].note_id;
 					m_Sound.until_next_note3 = layer3[layer3_counter].note_length;
 					layer3_counter += layer3[layer3_counter].note_length;
@@ -676,7 +651,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer3[layer3_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer11);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer11);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer11, layer3[layer3_counter].note_volume);
 					fn -= 24 * layer3[layer3_counter].note_id;
 					m_Sound.until_next_note3 = layer3[layer3_counter].note_length;
 					layer3_counter += layer3[layer3_counter].note_length;
@@ -693,7 +668,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer3[layer3_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer12);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer12);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer12, layer3[layer3_counter].note_volume);
 					fn -= 24 * layer3[layer3_counter].note_id;
 					m_Sound.until_next_note3 = layer3[layer3_counter].note_length;
 					layer3_counter += layer3[layer3_counter].note_length;
@@ -721,7 +696,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer4[layer4_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer13);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer13);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer13, layer4[layer4_counter].note_volume);
 					fn -= 24 * layer4[layer4_counter].note_id;
 					m_Sound.until_next_note4 = layer4[layer4_counter].note_length;
 					layer4_counter += layer4[layer4_counter].note_length;
@@ -738,7 +713,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer4[layer4_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer14);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer14);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer14, layer4[layer4_counter].note_volume);
 					fn -= 24 * layer4[layer4_counter].note_id;
 					m_Sound.until_next_note4 = layer4[layer4_counter].note_length;
 					layer4_counter += layer4[layer4_counter].note_length;
@@ -755,7 +730,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer4[layer4_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer15);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer15);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer15, layer4[layer4_counter].note_volume);
 					fn -= 24 * layer4[layer4_counter].note_id;
 					m_Sound.until_next_note4 = layer4[layer4_counter].note_length;
 					layer4_counter += layer4[layer4_counter].note_length;
@@ -772,7 +747,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer4[layer4_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer16);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer16);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer16, layer4[layer4_counter].note_volume);
 					fn -= 24 * layer4[layer4_counter].note_id;
 					m_Sound.until_next_note4 = layer4[layer4_counter].note_length;
 					layer4_counter += layer4[layer4_counter].note_length;
@@ -800,7 +775,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer5[layer5_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer17);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer17);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer17, layer5[layer5_counter].note_volume);
 					fn -= 24 * layer5[layer5_counter].note_id;
 					m_Sound.until_next_note5 = layer5[layer5_counter].note_length;
 					layer5_counter += layer5[layer5_counter].note_length;
@@ -817,7 +792,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer5[layer5_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer18);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer18);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer18, layer5[layer5_counter].note_volume);
 					fn -= 24 * layer5[layer5_counter].note_id;
 					m_Sound.until_next_note5 = layer5[layer5_counter].note_length;
 					layer5_counter += layer5[layer5_counter].note_length;
@@ -834,7 +809,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer5[layer5_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer19);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer19);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer19, layer5[layer5_counter].note_volume);
 					fn -= 24 * layer5[layer5_counter].note_id;
 					m_Sound.until_next_note5 = layer5[layer5_counter].note_length;
 					layer5_counter += layer5[layer5_counter].note_length;
@@ -851,7 +826,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					fn += 24 * layer5[layer5_counter].note_id;
 					m_Sound.LoadWaveFile(fn, &m_Sound.m_secondaryBuffer20);
-					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer20);
+					m_Sound.PlayWaveFile(&m_Sound.m_secondaryBuffer20, layer5[layer5_counter].note_volume);
 					fn -= 24 * layer5[layer5_counter].note_id;
 					m_Sound.until_next_note5 = layer5[layer5_counter].note_length;
 					layer5_counter += layer5[layer5_counter].note_length;
@@ -865,10 +840,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				}
 			}
 
-			//sprawdzenie, czy na którejœ warstwie jest jeszcze jakiœ dŸwiêk
 			sound_playing = layer1_playing + layer2_playing + layer3_playing + layer4_playing + layer5_playing;
 
-			//je¿eli odleg³oœæ w czasie do nastêpnej nuty na ka¿dej warstwie jest>0, program czeka przez czas pozosta³y do nastêpnego dŸwiêku
 				if (m_Sound.until_next_note1 > 0 && m_Sound.until_next_note2 > 0 && m_Sound.until_next_note3 > 0 && m_Sound.until_next_note4 > 0 && m_Sound.until_next_note5 > 0)
 				{
 					if (sound_playing == 0)
@@ -892,8 +865,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						m_Sound.until_next_note = m_Sound.until_next_note5;
 					}
-
-					//i zmienia pozosta³e odleg³oœci w czasie
 					m_Sound.until_next_note1 -= m_Sound.until_next_note;
 					m_Sound.until_next_note2 -= m_Sound.until_next_note;
 					m_Sound.until_next_note3 -= m_Sound.until_next_note;
@@ -904,11 +875,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				}
 
 		}
-
-		//po zakoñczeniu odtwarzania program czeka jeszcze sekundê na zanikniêcie wszystkich dŸwiêków, pog³osu itp.
 			Sleep(1000);
-
-		//i sprz¹ta po systemie odtwarzania dŸwiêku
 			m_Sound.Shutdown();
 			m_Sound.ShutdownDirectSound();
 			break;
@@ -961,92 +928,129 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	HWND hwnd, hPrzycisk1, hPrzycisk2;
 
-	//wyczyszczenie warstw, ¿eby by³y puste przy rozpoczêciu programu
 	for (int i = 0; i < 1000; i++)
 	{
 		layer1[i].note_id = 0;
 		layer1[i].note_length = 0;
+		layer1[i].note_volume = 0;
 		layer2[i].note_id = 0;
 		layer2[i].note_length = 0;
+		layer2[i].note_volume = 0;
 		layer3[i].note_id = 0;
 		layer3[i].note_length = 0;
+		layer3[i].note_volume = 0;
 		layer4[i].note_id = 0;
 		layer4[i].note_length = 0;
+		layer4[i].note_volume = 0;
 		layer5[i].note_id = 0;
 		layer5[i].note_length = 0;
+		layer5[i].note_volume = 0;
 	}
 
 	//test
 	layer1[0].note_id = 0;
 	layer1[0].note_length = 2;
+	layer1[0].note_volume = 0;
 	layer1[2].note_id = 1;
 	layer1[2].note_length = 2;
+	layer1[2].note_volume = 0;
 	layer1[4].note_id = 2;
 	layer1[4].note_length = 2;
+	layer1[4].note_volume = 0;
 	layer1[6].note_id = 0;
 	layer1[6].note_length = 2;
+	layer1[6].note_volume = 0;
 	layer1[8].note_id = 3;
 	layer1[8].note_length = 2;
+	layer1[8].note_volume = 0;
 	layer1[10].note_id = 4;
 	layer1[10].note_length = 4;
+	layer1[10].note_volume = 0;
 	layer1[14].note_id = 5;
 	layer1[14].note_length = 2;
+	layer1[14].note_volume = 0;
 	layer1[16].note_id = 0;
 	layer1[16].note_length = 2;
+	layer1[16].note_volume = 0;
 	layer1[18].note_id = 5;
 	layer1[18].note_length = 2;
+	layer1[18].note_volume = 0;
 	layer1[20].note_id = 6;
 	layer1[20].note_length = 2;
+	layer1[20].note_volume = 0;
 	layer1[22].note_id = 0;
 	layer1[22].note_length = 2;
+	layer1[22].note_volume = 0;
 	layer1[24].note_id = 3;
 	layer1[24].note_length = 2;
+	layer1[24].note_volume = 0;
 	layer1[26].note_id = 7;
 	layer1[26].note_length = 4;
-
+	layer1[26].note_volume = 0;
+	
 	layer2[0].note_id = 8;
 	layer2[0].note_length = 8;
+	layer2[0].note_volume = -300;
 	layer2[8].note_id = 9;
 	layer2[8].note_length = 8;
+	layer2[8].note_volume = -300;
 	layer2[16].note_id = 10;
 	layer2[16].note_length = 8;
+	layer2[16].note_volume = -300;
 	layer2[24].note_id = 8;
 	layer2[24].note_length = 8;
+	layer2[24].note_volume = -300;
 
 	layer3[0].note_id = 11;
 	layer3[0].note_length = 2;
+	layer3[0].note_volume = -500;
 	layer3[2].note_id = 12;
 	layer3[2].note_length = 2;
+	layer3[2].note_volume = -500;
 	layer3[4].note_id = 13;
 	layer3[4].note_length = 2;
+	layer3[4].note_volume = -500;
 	layer3[6].note_id = 14;
 	layer3[6].note_length = 2;
+	layer3[6].note_volume = -500;
 	layer3[8].note_id = 15;
 	layer3[8].note_length = 2;
+	layer3[8].note_volume = -500;
 	layer3[10].note_id = 16;
 	layer3[10].note_length = 2;
+	layer3[10].note_volume = -500;
 	layer3[12].note_id = 17;
 	layer3[12].note_length = 2;
+	layer3[12].note_volume = -500;
 	layer3[14].note_id = 13;
 	layer3[14].note_length = 2;
+	layer3[14].note_volume = -500;
 	layer3[16].note_id = 18;
 	layer3[16].note_length = 2;
+	layer3[16].note_volume = -500;
 	layer3[18].note_id = 19;
 	layer3[18].note_length = 2;
+	layer3[18].note_volume = -500;
 	layer3[20].note_id = 20;
 	layer3[20].note_length = 2;
+	layer3[20].note_volume = -500;
 	layer3[22].note_id = 21;
 	layer3[22].note_length = 2;
+	layer3[22].note_volume = -500;
 	layer3[24].note_id = 11;
 	layer3[24].note_length = 2;
+	layer3[24].note_volume = -500;
 	layer3[26].note_id = 12;
 	layer3[26].note_length = 2;
+	layer3[26].note_volume = -500;
 	layer3[28].note_id = 13;
 	layer3[28].note_length = 2;
+	layer3[28].note_volume = -500;
 	layer3[30].note_id = 14;
 	layer3[30].note_length = 2;
+	layer3[30].note_volume = -500;
 
-	hwnd = CreateWindowEx(WS_EX_WINDOWEDGE, NazwaKlasy, "Main window", WS_OVERLAPPEDWINDOW+WS_HSCROLL+WS_VSCROLL, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, NULL, NULL, hInstance, NULL);
+	hwnd = CreateWindowEx(WS_EX_WINDOWEDGE, NazwaKlasy, "Main window", WS_OVERLAPPEDWINDOW+WS_HSCROLL+WS_VSCROLL, CW_USEDEFAULT, CW_USEDEFAULT, 1920, 1080, NULL, NULL, hInstance, NULL);
 
 	hPrzycisk1 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Pszycisk1", WS_CHILD | WS_VISIBLE | WS_BORDER, 120, 100, 150, 30, hwnd, (HMENU)ID_PRZYCISK1, hInstance, NULL);
 	hPrzycisk2 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Pszycisk2", WS_CHILD | WS_VISIBLE | WS_BORDER, 120, 150, 150, 30, hwnd, (HMENU)ID_PRZYCISK2, hInstance, NULL);
@@ -1065,7 +1069,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return TRUE;
 	}
 
-	ShowWindow(hwnd, nCmdShow);
+	ShowWindow(hwnd, SW_MAXIMIZE);
 	UpdateWindow(hwnd);
 
 	while (GetMessage(&info, NULL, 0, 0))
