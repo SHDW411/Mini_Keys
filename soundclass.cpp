@@ -364,6 +364,301 @@ bool SoundClass::PlayWaveFile(IDirectSoundBuffer8** secondaryBuffer, long volume
 
 	return true;
 }
+
+void SoundClass::wyswietl(int layer, int octaves, int time, HDC* hdc, HDC* hdcNowy, HDC* hdcNowy2)
+{
+	 int pixel_x = 30;
+	 int pixel_y = 40;
+	 int temp = 0;
+
+	if (octaves == 1)
+	{
+		switch (layer)
+		{
+		case 1:
+			for (int i = 1; i < 289; i += 8)
+			{
+				for (int j = time; j < time + 32; j++)
+				{
+					if (layer1[j].note_id >= i && layer1[j].note_id < i + 8)
+					{
+						temp = j;
+						for (int k = 0; k < layer1[temp].note_length; k++)
+						{
+							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
+							j++;
+							pixel_x += 29;
+						}
+						j--;
+					}
+					else
+					{
+						BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy, 0, 0, SRCCOPY);
+						pixel_x += 29;
+					}
+				}
+				pixel_y += 8;
+				pixel_x = 30;
+			}
+			break;
+			
+		case 2:
+			for (int i = 1; i < 289; i += 8)
+			{
+				for (int j = time; j < time + 32; j++)
+				{
+					if (layer2[j].note_id >= i && layer2[j].note_id < i + 8)
+					{
+						temp = j;
+						for (int k = 0; k < layer2[temp].note_length; k++)
+						{
+							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
+							j++;
+							pixel_x += 29;
+						}
+						j--;
+					}
+					else
+					{
+						BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy, 0, 0, SRCCOPY);
+						pixel_x += 29;
+					}
+				}
+				pixel_y += 8;
+				pixel_x = 30;
+			}
+			break;
+
+		case 3:
+			for (int i = 1; i < 289; i += 8)
+			{
+				for (int j = time; j < time + 32; j++)
+				{
+					if (layer3[j].note_id >= i && layer3[j].note_id < i + 8)
+					{
+						temp = j;
+						for (int k = 0; k < layer3[temp].note_length; k++)
+						{
+							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
+							j++;
+							pixel_x += 29;
+						}
+						j--;
+					}
+					else
+					{
+						BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy, 0, 0, SRCCOPY);
+						pixel_x += 29;
+					}
+				}
+				pixel_y += 8;
+				pixel_x = 30;
+			}
+			break;
+
+		case 4:
+			for (int i = 1; i < 289; i += 8)
+			{
+				for (int j = time; j < time + 32; j++)
+				{
+					if (layer4[j].note_id >= i && layer4[j].note_id < i + 8)
+					{
+						temp = j;
+						for (int k = 0; k < layer4[temp].note_length; k++)
+						{
+							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
+							j++;
+							pixel_x += 29;
+						}
+						j--;
+					}
+					else
+					{
+						BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy, 0, 0, SRCCOPY);
+						pixel_x += 29;
+					}
+				}
+				pixel_y += 8;
+				pixel_x = 30;
+			}
+			break;
+
+		case 5:
+			for (int i = 1; i < 289; i += 8)
+			{
+				for (int j = time; j < time + 32; j++)
+				{
+					if (layer5[j].note_id >= i && layer5[j].note_id < i + 8)
+					{
+						temp = j;
+						for (int k = 0; k < layer5[temp].note_length; k++)
+						{
+							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
+							j++;
+							pixel_x += 29;
+						}
+						j--;
+					}
+					else
+					{
+						BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy, 0, 0, SRCCOPY);
+						pixel_x += 29;
+					}
+				}
+				pixel_y += 8;
+				pixel_x = 30;
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+	else
+	{
+		switch (layer)
+		{
+		case 1:
+			for (int i = 289; i < 577; i += 8)
+			{
+				for (int j = time; j < time + 32; j++)
+				{
+					if (layer1[j].note_id >= i && layer1[j].note_id < i + 8)
+					{
+						temp = j;
+						for (int k = 0; k < layer1[temp].note_length; k++)
+						{
+							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
+							j++;
+							pixel_x += 29;
+						}
+						j--;
+					}
+					else
+					{
+						BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy, 0, 0, SRCCOPY);
+						pixel_x += 29;
+					}
+				}
+				pixel_y += 8;
+				pixel_x = 30;
+			}
+			break;
+
+		case 2:
+			for (int i = 289; i < 577; i += 8)
+			{
+				for (int j = time; j < time + 32; j++)
+				{
+					if (layer2[j].note_id >= i && layer2[j].note_id < i + 8)
+					{
+						temp = j;
+						for (int k = 0; k < layer2[temp].note_length; k++)
+						{
+							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
+							j++;
+							pixel_x += 29;
+						}
+						j--;
+					}
+					else
+					{
+						BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy, 0, 0, SRCCOPY);
+						pixel_x += 29;
+					}
+				}
+				pixel_y += 8;
+				pixel_x = 30;
+			}
+			break;
+
+		case 3:
+			for (int i = 289; i < 577; i += 8)
+			{
+				for (int j = time; j < time + 32; j++)
+				{
+					if (layer3[j].note_id >= i && layer3[j].note_id < i + 8)
+					{
+						temp = j;
+						for (int k = 0; k < layer3[temp].note_length; k++)
+						{
+							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
+							j++;
+							pixel_x += 29;
+						}
+						j--;
+					}
+					else
+					{
+						BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy, 0, 0, SRCCOPY);
+						pixel_x += 29;
+					}
+				}
+				pixel_y += 8;
+				pixel_x = 30;
+			}
+			break;
+
+		case 4:
+			for (int i = 289; i < 577; i += 8)
+			{
+				for (int j = time; j < time + 32; j++)
+				{
+					if (layer4[j].note_id >= i && layer4[j].note_id < i + 8)
+					{
+						temp = j;
+						for (int k = 0; k < layer4[temp].note_length; k++)
+						{
+							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
+							j++;
+							pixel_x += 29;
+						}
+						j--;
+					}
+					else
+					{
+						BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy, 0, 0, SRCCOPY);
+						pixel_x += 29;
+					}
+				}
+				pixel_y += 8;
+				pixel_x = 30;
+			}
+			break;
+
+		case 5:
+			for (int i = 289; i < 577; i += 8)
+			{
+				for (int j = time; j < time + 32; j++)
+				{
+					if (layer5[j].note_id >= i && layer5[j].note_id < i + 8)
+					{
+						temp = j;
+						for (int k = 0; k < layer5[temp].note_length; k++)
+						{
+							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
+							j++;
+							pixel_x += 29;
+						}
+						j--;
+					}
+					else
+					{
+						BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy, 0, 0, SRCCOPY);
+						pixel_x += 29;
+					}
+				}
+				pixel_y += 8;
+				pixel_x = 30;
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
 void SoundClass::playback()
 {
 	//przygotowanie wszystkich zmiennych potrzebnych do odtwarzania
@@ -384,7 +679,7 @@ void SoundClass::playback()
 	counter4 = 0;
 	counter5 = 0;
 	until_next_note = 0;
-	until_next_note1 = 2;
+	until_next_note1 = 0;
 	until_next_note2 = 0;
 	until_next_note3 = 0;
 	until_next_note4 = 0;
