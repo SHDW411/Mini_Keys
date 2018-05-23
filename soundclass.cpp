@@ -659,6 +659,58 @@ void SoundClass::wyswietl(int layer, int octaves, int time, HDC* hdc, HDC* hdcNo
 	}
 }
 
+void SoundClass::AddNote(HWND hwnd, int layer, int note_id, int note_length, int note_volume)
+{
+	switch (layer)
+	{
+	case 1:
+		layer1[layer1_counter].note_id = note_id;
+		layer1[layer1_counter].note_length = note_length;
+		layer1[layer1_counter].note_volume = note_volume;
+		fn += 24 * layer1[layer1_counter].note_id;
+		InitializeDirectSound(hwnd);
+		LoadWaveFile(fn, &m_secondaryBuffer1);
+		PlayWaveFile(&m_secondaryBuffer1, volume);
+		Sleep(layer1[layer1_counter].note_length * 116 + 1000);
+		Shutdown();
+		ShutdownDirectSound();
+		fn -= 24 * layer1[layer1_counter].note_id;
+		layer1_counter += layer1[layer1_counter].note_length;
+		RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+		break;
+	case 2:
+		layer2[layer2_counter].note_id = note_id;
+		layer2[layer2_counter].note_length = note_length;
+		layer2[layer2_counter].note_volume = note_volume;
+		layer2_counter++;
+		RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+		break;
+	case 3:
+		layer3[layer3_counter].note_id = note_id;
+		layer3[layer3_counter].note_length = note_length;
+		layer3[layer3_counter].note_volume = note_volume;
+		layer3_counter++;
+		RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+		break;
+	case 4:
+		layer4[layer4_counter].note_id = note_id;
+		layer4[layer4_counter].note_length = note_length;
+		layer4[layer4_counter].note_volume = note_volume;
+		layer4_counter++;
+		RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+		break;
+	case 5:
+		layer5[layer5_counter].note_id = note_id;
+		layer5[layer5_counter].note_length = note_length;
+		layer5[layer5_counter].note_volume = note_volume;
+		layer5_counter++;
+		RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+		break;
+	}
+
+}
+
+
 void SoundClass::playback()
 {
 	//przygotowanie wszystkich zmiennych potrzebnych do odtwarzania
@@ -1145,4 +1197,5 @@ void SoundClass::playback()
 	Shutdown();
 	ShutdownDirectSound();
 }
+
 //koniec systemu odtwarzania dŸwiêku
