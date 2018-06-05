@@ -100,7 +100,7 @@ public:
 	int time = 0;
 	int octave = 1;
 
-	void wyswietl(int layer_id, int octaves, int time, HDC* hdc, HDC* hdcNowy, HDC* hdcNowy2);
+	void wyswietl(int layer_id, int octaves, int time, HDC* hdc, HDC* hdcNowy, HDC* hdcNowy2, HDC* hdcNowy3);
 
 	
 

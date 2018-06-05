@@ -365,12 +365,14 @@ bool SoundClass::PlayWaveFile(IDirectSoundBuffer8** secondaryBuffer, long volume
 	return true;
 }
 
-void SoundClass::wyswietl(int layer, int octaves, int time, HDC* hdc, HDC* hdcNowy, HDC* hdcNowy2)
+void SoundClass::wyswietl(int layer, int octaves, int time, HDC* hdc, HDC* hdcNowy, HDC* hdcNowy2, HDC* hdcNowy3)
 {
-	 int pixel_x = 30;
+	 int pixel_x = 1;
 	 int pixel_y = 40;
 	 int temp = 0;
-
+	 BitBlt(*hdc, pixel_x, pixel_y, 956, 287, *hdcNowy3, 0, 0, SRCCOPY);
+	 pixel_x = 30;
+	 pixel_y = 40;
 	if (octaves == 1)
 	{
 		switch (layer)
@@ -682,28 +684,60 @@ void SoundClass::AddNote(HWND hwnd, int layer, int note_id, int note_length, int
 		layer2[layer2_counter].note_id = note_id;
 		layer2[layer2_counter].note_length = note_length;
 		layer2[layer2_counter].note_volume = note_volume;
-		layer2_counter++;
+		fn += 24 * layer2[layer2_counter].note_id;
+		InitializeDirectSound(hwnd);
+		LoadWaveFile(fn, &m_secondaryBuffer1);
+		PlayWaveFile(&m_secondaryBuffer1, volume);
+		Sleep(layer2[layer2_counter].note_length * 116 + 1000);
+		Shutdown();
+		ShutdownDirectSound();
+		fn -= 24 * layer2[layer2_counter].note_id;
+		layer2_counter += layer2[layer2_counter].note_length;
 		RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
 		break;
 	case 3:
 		layer3[layer3_counter].note_id = note_id;
 		layer3[layer3_counter].note_length = note_length;
 		layer3[layer3_counter].note_volume = note_volume;
-		layer3_counter++;
+		fn += 24 * layer3[layer3_counter].note_id;
+		InitializeDirectSound(hwnd);
+		LoadWaveFile(fn, &m_secondaryBuffer1);
+		PlayWaveFile(&m_secondaryBuffer1, volume);
+		Sleep(layer3[layer3_counter].note_length * 116 + 1000);
+		Shutdown();
+		ShutdownDirectSound();
+		fn -= 24 * layer3[layer3_counter].note_id;
+		layer3_counter += layer3[layer3_counter].note_length;
 		RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
 		break;
 	case 4:
 		layer4[layer4_counter].note_id = note_id;
 		layer4[layer4_counter].note_length = note_length;
 		layer4[layer4_counter].note_volume = note_volume;
-		layer4_counter++;
+		fn += 24 * layer4[layer4_counter].note_id;
+		InitializeDirectSound(hwnd);
+		LoadWaveFile(fn, &m_secondaryBuffer1);
+		PlayWaveFile(&m_secondaryBuffer1, volume);
+		Sleep(layer4[layer4_counter].note_length * 116 + 1000);
+		Shutdown();
+		ShutdownDirectSound();
+		fn -= 24 * layer4[layer4_counter].note_id;
+		layer4_counter += layer4[layer4_counter].note_length;
 		RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
 		break;
 	case 5:
 		layer5[layer5_counter].note_id = note_id;
 		layer5[layer5_counter].note_length = note_length;
 		layer5[layer5_counter].note_volume = note_volume;
-		layer5_counter++;
+		fn += 24 * layer5[layer5_counter].note_id;
+		InitializeDirectSound(hwnd);
+		LoadWaveFile(fn, &m_secondaryBuffer1);
+		PlayWaveFile(&m_secondaryBuffer1, volume);
+		Sleep(layer5[layer5_counter].note_length * 116 + 1000);
+		Shutdown();
+		ShutdownDirectSound();
+		fn -= 24 * layer5[layer5_counter].note_id;
+		layer5_counter += layer5[layer5_counter].note_length;
 		RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
 		break;
 	}
