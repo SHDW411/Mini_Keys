@@ -24,7 +24,7 @@ SoundClass m_Sound;
 HBITMAP hBitmap = NULL;
 HBITMAP hBitmap2 = NULL;
 HBITMAP hBitmap3 = NULL;
-HWND hStatic_layer_value, hStatic_octaves_value, hStatic_display_value;
+HWND hStatic_layer_value, hStatic_octaves_value, hStatic_display_value, hStatic_volume_value;
 
 MSG info;
 
@@ -112,6 +112,70 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			SetWindowText(hStatic_layer_value, "5");
 			RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
 			break;
+		case previous_display:
+			if (m_Sound.time > 0)
+			{
+				m_Sound.time -= 32;
+				RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+			}
+			break;
+		case next_display:
+			m_Sound.time += 32;
+			RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+			break;
+		case last_delete:
+			if (m_Sound.current_layer == 1)
+			{
+				while (m_Sound.layer1[m_Sound.layer1_counter].note_length == 0)
+				{
+					m_Sound.layer1_counter--;
+				}
+				m_Sound.layer1[m_Sound.layer1_counter].note_id = 0;
+				m_Sound.layer1[m_Sound.layer1_counter].note_length = 0;
+				m_Sound.layer1[m_Sound.layer1_counter].note_volume = 0;
+			}
+			else if (m_Sound.current_layer == 2)
+			{
+				while (m_Sound.layer2[m_Sound.layer2_counter].note_length == 0)
+				{
+					m_Sound.layer2_counter--;
+				}
+				m_Sound.layer2[m_Sound.layer2_counter].note_id = 0;
+				m_Sound.layer2[m_Sound.layer2_counter].note_length = 0;
+				m_Sound.layer2[m_Sound.layer2_counter].note_volume = 0;
+			}
+			else if (m_Sound.current_layer == 3)
+			{
+				while (m_Sound.layer3[m_Sound.layer3_counter].note_length == 0)
+				{
+					m_Sound.layer3_counter--;
+				}
+				m_Sound.layer3[m_Sound.layer3_counter].note_id = 0;
+				m_Sound.layer3[m_Sound.layer3_counter].note_length = 0;
+				m_Sound.layer3[m_Sound.layer3_counter].note_volume = 0;
+			}
+			else if (m_Sound.current_layer == 4)
+			{
+				while (m_Sound.layer4[m_Sound.layer4_counter].note_length == 0)
+				{
+					m_Sound.layer4_counter--;
+				}
+				m_Sound.layer4[m_Sound.layer4_counter].note_id = 0;
+				m_Sound.layer4[m_Sound.layer4_counter].note_length = 0;
+				m_Sound.layer4[m_Sound.layer4_counter].note_volume = 0;
+			}
+			else
+			{
+				while (m_Sound.layer5[m_Sound.layer5_counter].note_length == 0)
+				{
+					m_Sound.layer5_counter--;
+				}
+				m_Sound.layer5[m_Sound.layer5_counter].note_id = 0;
+				m_Sound.layer5[m_Sound.layer5_counter].note_length = 0;
+				m_Sound.layer5[m_Sound.layer5_counter].note_volume = 0;
+			}
+			RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+			break;
 		case addpause:
 			m_Sound.AddNote(hwnd, m_Sound.current_layer, 0, 1, 0);
 			break;
@@ -122,21 +186,30 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			//przycisk odtwarzaj¹cy utworzon¹ melodiê
 		case vol0:
 			m_Sound.volume = -1500;
+			SetWindowText(hStatic_volume_value, "-15 dB");
 			break;
 		case vol1:
 			m_Sound.volume = -1000;
+			SetWindowText(hStatic_volume_value, "-10 dB");
 			break;
 		case vol2:
 			m_Sound.volume = -750;
+			SetWindowText(hStatic_volume_value, "-7,5 dB");
 			break;
 		case vol3:
 			m_Sound.volume = -500;
+			SetWindowText(hStatic_volume_value, "-5 dB");
 			break;
 		case vol4:
 			m_Sound.volume = -250;
+			SetWindowText(hStatic_volume_value, "-2,5 dB");
 			break;
 		case vol5:
 			m_Sound.volume = 0;
+			SetWindowText(hStatic_volume_value, "0 dB");
+			break;
+		case saver:
+			m_Sound.save_to_file();
 			break;
 		case ID_PRZYCISK1:
 			if(m_Sound.octave==1){
@@ -2675,7 +2748,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	HWND hwnd, hPrzycisk1, hPrzycisk2, hPrzycisk3, hPrzycisk4, hPrzycisk5, hPrzycisk6, hPrzycisk7, hPrzycisk8, hPrzycisk9, hPrzycisk10, hPrzycisk11, hPrzycisk12, hPrzycisk13, hPrzycisk14, hPrzycisk15, hPrzycisk16, hPrzycisk17, hPrzycisk18, hPrzycisk19, hPrzycisk20, hPrzycisk21, hPrzycisk22, hPrzycisk23, hPrzycisk24, hPrzycisk25, hPrzycisk26, hPrzycisk27, hPrzycisk28, hPrzycisk29, hPrzycisk30, hPrzycisk31, hPrzycisk32, hPrzycisk33, hPrzycisk34, hPrzycisk35, hPrzycisk36, hPrzycisk37, hPrzycisk38, hPrzycisk39, hPrzycisk40, hPrzycisk41, hPrzycisk42, hPrzycisk43, hPrzycisk44, hPrzycisk45, hPrzycisk46, hPrzycisk47, hPrzycisk48, hPrzycisk49, hPrzycisk50, hPrzycisk51, hPrzycisk52, hPrzycisk53, hPrzycisk54, hPrzycisk55, hPrzycisk56, hPrzycisk57, hPrzycisk58, hPrzycisk59, hPrzycisk60, hPrzycisk61, hPrzycisk62, hPrzycisk63, hPrzycisk64, hPrzycisk65, hPrzycisk66, hPrzycisk67, hPrzycisk68, hPrzycisk69, hPrzycisk70, hPrzycisk71, hPrzycisk72, hPrzycisk73, hPrzycisk74, hPrzycisk75, hPrzycisk76, hPrzycisk77, hPrzycisk78, hPrzycisk79, hPrzycisk80, hPrzycisk81, hPrzycisk82, hPrzycisk83, hPrzycisk84, hPrzycisk85, hPrzycisk86, hPrzycisk87, hPrzycisk88, hPrzycisk89, hPrzycisk90, hPrzycisk91, hPrzycisk92, hPrzycisk93, hPrzycisk94, hPrzycisk95, hPrzycisk96, hPrzycisk97, hPrzycisk98, hPrzycisk99, hPrzycisk100, hPrzycisk101, hPrzycisk102, hPrzycisk103, hPrzycisk104, hPrzycisk105, hPrzycisk106, hPrzycisk107, hPrzycisk108, hPrzycisk109, hPrzycisk110, hPrzycisk111, hPrzycisk112, hPrzycisk113, hPrzycisk114, hPrzycisk115, hPrzycisk116, hPrzycisk117, hPrzycisk118, hPrzycisk119, hPrzycisk120, hPrzycisk121, hPrzycisk122, hPrzycisk123, hPrzycisk124, hPrzycisk125, hPrzycisk126, hPrzycisk127, hPrzycisk128, hPrzycisk129, hPrzycisk130, hPrzycisk131, hPrzycisk132, hPrzycisk133, hPrzycisk134, hPrzycisk135, hPrzycisk136, hPrzycisk137, hPrzycisk138, hPrzycisk139, hPrzycisk140, hPrzycisk141, hPrzycisk142, hPrzycisk143, hPrzycisk144, hPrzycisk145, hPrzycisk146, hPrzycisk147, hPrzycisk148, hPrzycisk149, hPrzycisk150, hPrzycisk151, hPrzycisk152, hPrzycisk153, hPrzycisk154, hPrzycisk155, hPrzycisk156, hPrzycisk157, hPrzycisk158, hPrzycisk159, hPrzycisk160, hPrzycisk161, hPrzycisk162, hPrzycisk163, hPrzycisk164, hPrzycisk165, hPrzycisk166, hPrzycisk167, hPrzycisk168, hPrzycisk169, hPrzycisk170, hPrzycisk171, hPrzycisk172, hPrzycisk173, hPrzycisk174, hPrzycisk175, hPrzycisk176, hPrzycisk177, hPrzycisk178, hPrzycisk179, hPrzycisk180, hPrzycisk181, hPrzycisk182, hPrzycisk183, hPrzycisk184, hPrzycisk185, hPrzycisk186, hPrzycisk187, hPrzycisk188, hPrzycisk189, hPrzycisk190, hPrzycisk191, hPrzycisk192, hPrzycisk193, hPrzycisk194, hPrzycisk195, hPrzycisk196, hPrzycisk197, hPrzycisk198, hPrzycisk199, hPrzycisk200;
-	HWND open, octave23, octave45, octave67, volum0,volum1, volum2, volum3, volum4, volum5, openerr, octaves24, octaves57, current_layer_1, current_layer_2, current_layer_3, current_layer_4, current_layer_5, add_pause;
+	HWND save, open, octave23, octave45, octave67, volum0,volum1, volum2, volum3, volum4, volum5, openerr, octaves24, octaves57, current_layer_1, current_layer_2, current_layer_3, current_layer_4, current_layer_5, add_pause, display_next, display_previous, delete_last;
 
 	//wyczyszczenie warstw, ¿eby by³y puste przy rozpoczêciu programu
 	for (int i = 0; i < 1000; i++)
@@ -2704,13 +2777,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	octave23 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Octave 2,3", WS_CHILD | WS_VISIBLE | WS_BORDER, 105, 0, 100, 40, hwnd, (HMENU)octave3, hInstance, NULL);
 	octave45 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Octave 4,5", WS_CHILD | WS_VISIBLE | WS_BORDER, 205, 0, 100, 40, hwnd, (HMENU)octave5, hInstance, NULL);
 	octave67 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Octave 6,7", WS_CHILD | WS_VISIBLE | WS_BORDER, 305, 0, 100, 40, hwnd, (HMENU)octave7, hInstance, NULL);
-	openerr = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Open", WS_CHILD | WS_VISIBLE | WS_BORDER, 405, 0, 100, 40, hwnd, (HMENU)opener, hInstance, NULL);
-	volum0 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Volume 0", WS_CHILD | WS_VISIBLE | WS_BORDER, 505, 0, 80, 40, hwnd, (HMENU)vol0, hInstance, NULL);
-	volum1 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Volume 1", WS_CHILD | WS_VISIBLE | WS_BORDER, 585, 0, 80, 40, hwnd, (HMENU)vol1, hInstance, NULL);
-	volum2 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Volume 2", WS_CHILD | WS_VISIBLE | WS_BORDER, 665, 0, 80, 40, hwnd, (HMENU)vol2, hInstance, NULL);
-	volum3 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Volume 3", WS_CHILD | WS_VISIBLE | WS_BORDER, 745, 0, 80, 40, hwnd, (HMENU)vol3, hInstance, NULL);
-	volum4 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Volume 4", WS_CHILD | WS_VISIBLE | WS_BORDER, 825, 0, 80, 40, hwnd, (HMENU)vol4, hInstance, NULL);
-	volum5 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Volume 5", WS_CHILD | WS_VISIBLE | WS_BORDER, 905, 0, 80, 40, hwnd, (HMENU)vol5, hInstance, NULL);
+	save = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Save", WS_CHILD | WS_VISIBLE | WS_BORDER, 405, 0, 100, 40, hwnd, (HMENU)saver, hInstance, NULL);
+	openerr = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Open", WS_CHILD | WS_VISIBLE | WS_BORDER, 505, 0, 100, 40, hwnd, (HMENU)opener, hInstance, NULL);
+	volum0 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "-15 dB", WS_CHILD | WS_VISIBLE | WS_BORDER, 605, 0, 60, 40, hwnd, (HMENU)vol0, hInstance, NULL);
+	volum1 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "-10 dB", WS_CHILD | WS_VISIBLE | WS_BORDER, 665, 0, 60, 40, hwnd, (HMENU)vol1, hInstance, NULL);
+	volum2 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "-7,5 dB", WS_CHILD | WS_VISIBLE | WS_BORDER, 725, 0, 60, 40, hwnd, (HMENU)vol2, hInstance, NULL);
+	volum3 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "-5 dB", WS_CHILD | WS_VISIBLE | WS_BORDER, 785, 0, 60, 40, hwnd, (HMENU)vol3, hInstance, NULL);
+	volum4 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "-2,5 dB", WS_CHILD | WS_VISIBLE | WS_BORDER, 845, 0, 60, 40, hwnd, (HMENU)vol4, hInstance, NULL);
+	volum5 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "0 dB", WS_CHILD | WS_VISIBLE | WS_BORDER, 905, 0, 60, 40, hwnd, (HMENU)vol5, hInstance, NULL);
 
 	octaves24 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Octaves 2-4", WS_CHILD | WS_VISIBLE | WS_BORDER, 985, 0, 100, 40, hwnd, (HMENU)octave24, hInstance, NULL);
 	octaves57 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Octaves 5-7", WS_CHILD | WS_VISIBLE | WS_BORDER, 1085, 0, 100, 40, hwnd, (HMENU)octave57, hInstance, NULL);
@@ -2721,7 +2795,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	current_layer_4 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Layer 4", WS_CHILD | WS_VISIBLE | WS_BORDER, 1085, 200, 100, 40, hwnd, (HMENU)current_layer4, hInstance, NULL);
 	current_layer_5 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Layer 5", WS_CHILD | WS_VISIBLE | WS_BORDER, 1085, 240, 100, 40, hwnd, (HMENU)current_layer5, hInstance, NULL);
 
-	add_pause = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Pause", WS_CHILD | WS_VISIBLE | WS_BORDER, 1085, 320, 100, 40, hwnd, (HMENU)addpause, hInstance, NULL);
+	add_pause = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Pause", WS_CHILD | WS_VISIBLE | WS_BORDER, 1085, 280, 100, 40, hwnd, (HMENU)addpause, hInstance, NULL);
+
+	display_next = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", ">", WS_CHILD | WS_VISIBLE | WS_BORDER, 1045, 280, 40, 40, hwnd, (HMENU)next_display, hInstance, NULL);
+	display_previous = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "<", WS_CHILD | WS_VISIBLE | WS_BORDER, 1005, 280, 40, 40, hwnd, (HMENU)previous_display, hInstance, NULL);
+	delete_last = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Delete last note", WS_CHILD | WS_VISIBLE | WS_BORDER, 985, 40, 200, 40, hwnd, (HMENU)last_delete, hInstance, NULL);
 
 	HWND hStatic1 = CreateWindowEx(0, "STATIC", NULL, WS_CHILD | WS_VISIBLE |SS_LEFT, 0, 340, 30, 40, hwnd, NULL, hInstance, NULL);
 	SetWindowText(hStatic1, " 1");
@@ -2797,17 +2875,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetWindowText(hStatic_layer, "Current layer: ");
 	SetWindowText(hStatic_layer_value, "1");
 
-	HWND hStatic_octaves = CreateWindowEx(0, "STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_LEFT, 1000, 480, 600, 20, hwnd, NULL, hInstance, NULL);
-	hStatic_octaves_value = CreateWindowEx(0, "STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_LEFT, 1000, 500, 600, 20, hwnd, NULL, hInstance, NULL);
+	HWND hStatic_octaves = CreateWindowEx(0, "STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_LEFT, 1000, 460, 600, 20, hwnd, NULL, hInstance, NULL);
+	hStatic_octaves_value = CreateWindowEx(0, "STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_LEFT, 1000, 480, 600, 20, hwnd, NULL, hInstance, NULL);
 	SetWindowText(hStatic_octaves, "Current keyboard octaves: ");
 	SetWindowText(hStatic_octaves_value, "2-3");
 
-	HWND hStatic_display = CreateWindowEx(0, "STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_LEFT, 1000, 560, 600, 20, hwnd, NULL, hInstance, NULL);
-	hStatic_display_value = CreateWindowEx(0, "STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_LEFT, 1000, 580, 600, 20, hwnd, NULL, hInstance, NULL);
+	HWND hStatic_display = CreateWindowEx(0, "STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_LEFT, 1000, 520, 600, 20, hwnd, NULL, hInstance, NULL);
+	hStatic_display_value = CreateWindowEx(0, "STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_LEFT, 1000, 540, 600, 20, hwnd, NULL, hInstance, NULL);
 	SetWindowText(hStatic_display, "Current display octaves: ");
-	SetWindowText(hStatic_display_value, "5-7");
+	SetWindowText(hStatic_display_value, "2-4");
 
-
+	HWND hStatic_volume = CreateWindowEx(0, "STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_LEFT, 1000, 580, 600, 20, hwnd, NULL, hInstance, NULL);
+	hStatic_volume_value = CreateWindowEx(0, "STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_LEFT, 1000, 600, 600, 20, hwnd, NULL, hInstance, NULL);
+	SetWindowText(hStatic_volume, "Current volume: ");
+	SetWindowText(hStatic_volume_value, "0 dB");
 
 	hPrzycisk1 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER, 30, 330, 40, 40, hwnd, (HMENU)ID_PRZYCISK1, hInstance, NULL);
 	hPrzycisk2 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER, 30, 370, 40, 40, hwnd, (HMENU)ID_PRZYCISK2, hInstance, NULL);

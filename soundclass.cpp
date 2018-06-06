@@ -3,10 +3,16 @@
 #include <mmsystem.h>
 #include <dsound.h>
 #include <stdio.h>
+#include <fstream>
+#include <string>
+#include <iostream>
 #include "soundclass.h"
 #pragma comment(lib, "dsound.lib")
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "winmm.lib")
+
+fstream file_s;
+string line_s;
 
 
 SoundClass::SoundClass(const SoundClass& other)
@@ -528,12 +534,16 @@ void SoundClass::wyswietl(int layer, int octaves, int time, HDC* hdc, HDC* hdcNo
 					if (layer1[j].note_id >= i && layer1[j].note_id < i + 8)
 					{
 						temp = j;
-						for (int k = 0; k < layer1[temp].note_length; k++)
-						{
-							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
-							j++;
-							pixel_x += 29;
-						}
+							for (int k = 0; k < layer1[temp].note_length; k++)
+							{
+								BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
+								j++;
+								if (j == time + 32)
+								{
+									k=layer1[temp].note_length;
+								}
+								pixel_x += 29;
+							}
 						j--;
 					}
 					else
@@ -559,6 +569,10 @@ void SoundClass::wyswietl(int layer, int octaves, int time, HDC* hdc, HDC* hdcNo
 						{
 							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
 							j++;
+							if (j == time + 32)
+							{
+								k = layer2[temp].note_length;
+							}
 							pixel_x += 29;
 						}
 						j--;
@@ -586,6 +600,10 @@ void SoundClass::wyswietl(int layer, int octaves, int time, HDC* hdc, HDC* hdcNo
 						{
 							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
 							j++;
+							if (j == time + 32)
+							{
+								k = layer3[temp].note_length;
+							}
 							pixel_x += 29;
 						}
 						j--;
@@ -613,6 +631,10 @@ void SoundClass::wyswietl(int layer, int octaves, int time, HDC* hdc, HDC* hdcNo
 						{
 							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
 							j++;
+							if (j == time + 32)
+							{
+								k = layer4[temp].note_length;
+							}
 							pixel_x += 29;
 						}
 						j--;
@@ -640,6 +662,10 @@ void SoundClass::wyswietl(int layer, int octaves, int time, HDC* hdc, HDC* hdcNo
 						{
 							BitBlt(*hdc, pixel_x, pixel_y, 28, 7, *hdcNowy2, 0, 0, SRCCOPY);
 							j++;
+							if (j == time + 32)
+							{
+								k = layer5[temp].note_length;
+							}
 							pixel_x += 29;
 						}
 						j--;
@@ -744,6 +770,57 @@ void SoundClass::AddNote(HWND hwnd, int layer, int note_id, int note_length, int
 
 }
 
+void SoundClass::save_to_file()
+{
+	file_s.open("save.txt", ios::out | ios::app);
+	for (int i = 0; i < layer1_counter; i++)
+	{
+		file_s << "1\n" << layer1[i].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n";
+	}
+	for (int i = 0; i < layer2_counter; i++)
+	{
+		file_s << "2\n" << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n";
+	}
+	for (int i = 0; i < layer3_counter; i++)
+	{
+		file_s << "3\n" << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n";
+	}
+	for (int i = 0; i < layer4_counter; i++)
+	{
+		file_s << "4\n" << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n";
+	}
+	for (int i = 0; i < layer5_counter; i++)
+	{
+		file_s << "5\n" << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n";
+	}
+	file_s.close();
+}
+
+void SoundClass::load_file()
+{
+	file_s.open("save.txt", ios::out | ios::app);
+	for (int i = 0; i < layer1_counter; i++)
+	{
+		file_s << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n" << "1"  "\n";
+	}
+	for (int i = 0; i < layer2_counter; i++)
+	{
+		file_s << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n" << "1" << "\n";
+	}
+	for (int i = 0; i < layer3_counter; i++)
+	{
+		file_s << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n" << "1" << "\n";
+	}
+	for (int i = 0; i < layer4_counter; i++)
+	{
+		file_s << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n" << "1" << "\n";
+	}
+	for (int i = 0; i < layer5_counter; i++)
+	{
+		file_s << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n" << "1" << "\n";
+	}
+	file_s.close();
+}
 
 void SoundClass::playback()
 {

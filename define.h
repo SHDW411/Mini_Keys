@@ -21,6 +21,10 @@
 #define current_layer4 82
 #define current_layer5 81
 #define addpause 80
+#define next_display 79
+#define previous_display 78
+#define last_delete 77
+#define saver 76
 #define ID_PRZYCISK1	101
 #define ID_PRZYCISK2	102
 #define ID_PRZYCISK3	103

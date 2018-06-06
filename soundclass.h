@@ -66,7 +66,7 @@ public:
 	int until_next_note4;
 	int until_next_note5;
 	int current_layer = 1;
-	int octaves = 1;
+	int octaves = 0;
 	int volume = 0;
 
 	//tabelka z nazwami plików dŸwiêkowych
@@ -101,7 +101,9 @@ public:
 	int octave = 1;
 
 	void wyswietl(int layer_id, int octaves, int time, HDC* hdc, HDC* hdcNowy, HDC* hdcNowy2, HDC* hdcNowy3);
+	void save_to_file();
 
+	void load_file();
 	
 
 	IDirectSound8* m_DirectSound;
