@@ -775,52 +775,148 @@ void SoundClass::save_to_file()
 	file_s.open("save.txt", ios::out | ios::app);
 	for (int i = 0; i < layer1_counter; i++)
 	{
-		file_s << "1\n" << layer1[i].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n";
+		file_s << "1\n" << layer1[i].note_id << "\n" << layer1[i].note_length << "\n" << layer1[i].note_volume << "\n";
 	}
 	for (int i = 0; i < layer2_counter; i++)
 	{
-		file_s << "2\n" << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n";
+		file_s << "2\n" << layer2[i].note_id << "\n" << layer2[i].note_length << "\n" << layer2[i].note_volume << "\n";
 	}
 	for (int i = 0; i < layer3_counter; i++)
 	{
-		file_s << "3\n" << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n";
+		file_s << "3\n" << layer3[i].note_id << "\n" << layer3[i].note_length << "\n" << layer3[i].note_volume << "\n";
 	}
 	for (int i = 0; i < layer4_counter; i++)
 	{
-		file_s << "4\n" << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n";
+		file_s << "4\n" << layer4[i].note_id << "\n" << layer4[i].note_length << "\n" << layer4[i].note_volume << "\n";
 	}
 	for (int i = 0; i < layer5_counter; i++)
 	{
-		file_s << "5\n" << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n";
+		file_s << "5\n" << layer5[i].note_id << "\n" << layer5[i].note_length << "\n" << layer5[i].note_volume << "\n";
 	}
 	file_s.close();
 }
 
+void SoundClass::clear()
+{
+	layer1_counter = 0;
+	layer2_counter = 0;
+	layer3_counter = 0;
+	layer4_counter = 0;
+	layer5_counter = 0;
+	time = 0;
+	for (int i = 0; i < 1000; i++)
+	{
+		layer1[i].note_id = 0;
+		layer1[i].note_length = 0;
+		layer1[i].note_volume = 0;
+		layer2[i].note_id = 0;
+		layer2[i].note_length = 0;
+		layer2[i].note_volume = 0;
+		layer3[i].note_id = 0;
+		layer3[i].note_length = 0;
+		layer3[i].note_volume = 0;
+		layer4[i].note_id = 0;
+		layer4[i].note_length = 0;
+		layer4[i].note_volume = 0;
+		layer5[i].note_id = 0;
+		layer5[i].note_length = 0;
+		layer5[i].note_volume = 0;
+	}
+}
+
 void SoundClass::load_file()
 {
-	file_s.open("save.txt", ios::out | ios::app);
-	for (int i = 0; i < layer1_counter; i++)
+	clear();
+	file_s.open("save.txt", ios::in | ios::app);
+
+	while (getline(file_s, line))
 	{
-		file_s << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n" << "1"  "\n";
+		switch (nline%4)
+		{
+		case 1:
+			nlay = atoi(line.c_str());
+			break;
+		case 2:
+			nid = atoi(line.c_str());
+			if (nlay == 1)
+			{
+				layer1[layer1_counter].note_id = nid;
+			}
+			else if (nlay == 2)
+			{
+				layer2[layer2_counter].note_id = nid;
+			}
+			else if (nlay == 3)
+			{
+				layer3[layer3_counter].note_id = nid;
+			}
+			else if (nlay == 4)
+			{
+				layer4[layer4_counter].note_id = nid;
+			}
+			else
+			{
+				layer5[layer5_counter].note_id = nid;
+			}
+			break;
+		case 3:
+			nleng = atoi(line.c_str());
+			if (nlay == 1)
+			{
+				layer1[layer1_counter].note_length = nleng;
+			}
+			else if (nlay == 2)
+			{
+				layer2[layer2_counter].note_length = nleng;
+			}
+			else if (nlay == 3)
+			{
+				layer3[layer3_counter].note_length = nleng;
+			}
+			else if (nlay == 4)
+			{
+				layer4[layer4_counter].note_length = nleng;
+			}
+			else
+			{
+				layer5[layer5_counter].note_length = nleng;
+			}
+			break;
+		case 0:
+			nvol = atoi(line.c_str());
+			if (nlay == 1)
+			{
+				layer1[layer1_counter].note_volume = nvol;
+				layer1_counter++;
+			}
+			else if (nlay == 2)
+			{
+				layer2[layer2_counter].note_volume = nvol;
+				layer2_counter++;
+			}
+			else if (nlay == 3)
+			{
+				layer3[layer3_counter].note_volume = nvol;
+				layer3_counter++;
+			}
+			else if (nlay == 4)
+			{
+				layer4[layer4_counter].note_volume = nvol;
+				layer4_counter++;
+			}
+			else
+			{
+				layer5[layer5_counter].note_volume = nvol;
+				layer5_counter++;
+			}
+			break;
+		}
+		nline++;
 	}
-	for (int i = 0; i < layer2_counter; i++)
-	{
-		file_s << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n" << "1" << "\n";
-	}
-	for (int i = 0; i < layer3_counter; i++)
-	{
-		file_s << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n" << "1" << "\n";
-	}
-	for (int i = 0; i < layer4_counter; i++)
-	{
-		file_s << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n" << "1" << "\n";
-	}
-	for (int i = 0; i < layer5_counter; i++)
-	{
-		file_s << layer1[layer1_counter].note_id << "\n" << layer1[layer1_counter].note_length << "\n" << layer1[layer1_counter].note_volume << "\n" << "1" << "\n";
-	}
+
 	file_s.close();
 }
+
 
 void SoundClass::playback()
 {

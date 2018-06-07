@@ -25,6 +25,7 @@
 #define previous_display 78
 #define last_delete 77
 #define saver 76
+#define clear_all 75
 #define ID_PRZYCISK1	101
 #define ID_PRZYCISK2	102
 #define ID_PRZYCISK3	103

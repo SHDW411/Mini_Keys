@@ -99,12 +99,15 @@ public:
 	bool layer5_playing = 1;
 	int time = 0;
 	int octave = 1;
+	int nline = 1, nlay, nid, nleng, nvol;
+	string line;
 
 	void wyswietl(int layer_id, int octaves, int time, HDC* hdc, HDC* hdcNowy, HDC* hdcNowy2, HDC* hdcNowy3);
 	void save_to_file();
 
 	void load_file();
 	
+	void clear();
 
 	IDirectSound8* m_DirectSound;
 

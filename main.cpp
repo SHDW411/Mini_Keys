@@ -16,10 +16,6 @@
 
 using namespace std;
 
-int nline = 1, nid, nleng;
-fstream file;
-string line;
-
 SoundClass m_Sound;
 HBITMAP hBitmap = NULL;
 HBITMAP hBitmap2 = NULL;
@@ -210,6 +206,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		case saver:
 			m_Sound.save_to_file();
+			break;
+		case opener:
+			m_Sound.load_file();
+			RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+			break;
+		case clear_all:
+			m_Sound.clear();
+			RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
 			break;
 		case ID_PRZYCISK1:
 			if(m_Sound.octave==1){
@@ -2751,24 +2755,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	HWND save, open, octave23, octave45, octave67, volum0,volum1, volum2, volum3, volum4, volum5, openerr, octaves24, octaves57, current_layer_1, current_layer_2, current_layer_3, current_layer_4, current_layer_5, add_pause, display_next, display_previous, delete_last;
 
 	//wyczyszczenie warstw, ¿eby by³y puste przy rozpoczêciu programu
-	for (int i = 0; i < 1000; i++)
-	{
-		m_Sound.layer1[i].note_id = 0;
-		m_Sound.layer1[i].note_length = 0;
-		m_Sound.layer1[i].note_volume = 0;
-		m_Sound.layer2[i].note_id = 0;
-		m_Sound.layer2[i].note_length = 0;
-		m_Sound.layer2[i].note_volume = 0;
-		m_Sound.layer3[i].note_id = 0;
-		m_Sound.layer3[i].note_length = 0;
-		m_Sound.layer3[i].note_volume = 0;
-		m_Sound.layer4[i].note_id = 0;
-		m_Sound.layer4[i].note_length = 0;
-		m_Sound.layer4[i].note_volume = 0;
-		m_Sound.layer5[i].note_id = 0;
-		m_Sound.layer5[i].note_length = 0;
-		m_Sound.layer5[i].note_volume = 0;
-	}
+	m_Sound.clear();
 
 
 	hwnd = CreateWindowEx(WS_EX_WINDOWEDGE, NazwaKlasy, "Mini keys", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1200, 720, NULL, NULL, hInstance, NULL);
@@ -2796,6 +2783,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	current_layer_5 = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Layer 5", WS_CHILD | WS_VISIBLE | WS_BORDER, 1085, 240, 100, 40, hwnd, (HMENU)current_layer5, hInstance, NULL);
 
 	add_pause = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Pause", WS_CHILD | WS_VISIBLE | WS_BORDER, 1085, 280, 100, 40, hwnd, (HMENU)addpause, hInstance, NULL);
+	HWND clearall = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "Clear all", WS_CHILD | WS_VISIBLE | WS_BORDER, 1085, 320, 100, 40, hwnd, (HMENU)clear_all, hInstance, NULL);
 
 	display_next = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", ">", WS_CHILD | WS_VISIBLE | WS_BORDER, 1045, 280, 40, 40, hwnd, (HMENU)next_display, hInstance, NULL);
 	display_previous = CreateWindowEx(WS_EX_CLIENTEDGE, "BUTTON", "<", WS_CHILD | WS_VISIBLE | WS_BORDER, 1005, 280, 40, 40, hwnd, (HMENU)previous_display, hInstance, NULL);
